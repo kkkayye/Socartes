@@ -10,7 +10,7 @@ Live frontend reference: [https://sc.tckr.top/chat](https://sc.tckr.top/chat)
 
 Socartes focuses on explainable learning workflows. A learner can set a goal, inspect how agents divide the work, see which external knowledge was retrieved, review tool outputs, and compare the final answer against critic feedback.
 
-The current repository contains a lightweight static prototype that demonstrates the product surface and architecture without requiring a backend service.
+The current repository contains a lightweight static frontend and a standalone FastAPI backend prototype. The backend implements the agent loop with explicit Planner, Retriever, Tool Adapter, Executor, Critic, and Reflection components.
 
 ## Project Screenshots
 
@@ -48,7 +48,8 @@ Core functions:
 
 Implementation:
 
-- In the current prototype, the planner is represented by the `roles.planner` state in `scripts.js` and the Planner tab in `index.html`.
+- In the frontend prototype, the planner is represented by the `roles.planner` state in `scripts.js` and the Planner tab in `index.html`.
+- In the backend, `PlannerAgent` in `backend/socartes_backend/agents.py` creates the task graph, evidence requirements, and acceptance criteria.
 - The UI shows planner-specific tasks in the role panel, making the decomposition step visible to the user.
 - In a production runtime, this agent would emit a structured plan such as:
 
@@ -79,7 +80,8 @@ Core functions:
 
 Implementation:
 
-- In the current prototype, the executor is represented by `roles.executor`, the RAG source panel, and the tool output panel in `scripts.js`.
+- In the frontend prototype, the executor is represented by `roles.executor`, the RAG source panel, and the tool output panel in `scripts.js`.
+- In the backend, `ExecutorAgent` in `backend/socartes_backend/agents.py` consumes the plan, retrieved chunks, tool results, and learner context to produce a cited draft.
 - The Executor tab changes the visible role description and task list so users can see when the system is in synthesis mode.
 - In a production runtime, this agent would consume a plan, retrieved chunks, and tool results, then emit a draft object:
 
@@ -105,7 +107,8 @@ Core functions:
 
 Implementation:
 
-- In the current prototype, the critic is represented by `roles.critic` and the reflection timeline in `scripts.js`.
+- In the frontend prototype, the critic is represented by `roles.critic` and the reflection timeline in `scripts.js`.
+- In the backend, `CriticAgent` in `backend/socartes_backend/agents.py` checks citation coverage, tool traceability, open gaps, and acceptance criteria before approval.
 - Selecting the Critic tab shows audit-focused tasks, while `runReflectionCycle()` updates the self-correction timeline.
 - In a production runtime, this agent would return a review object:
 
@@ -135,7 +138,8 @@ Core functions:
 
 Implementation:
 
-- In the current prototype, the RAG worker is represented by the `sources` object in `scripts.js` and the Retrieved Knowledge panel.
+- In the frontend prototype, the RAG worker is represented by the `sources` object in `scripts.js` and the Retrieved Knowledge panel.
+- In the backend, `RetrieverWorker` in `backend/socartes_backend/agents.py` searches the local knowledge base from `backend/socartes_backend/knowledge.py` and returns normalized `RetrievalChunk` objects.
 - The source buttons model different retrieval backends: domain notes, vector database records, and local files.
 - In a production runtime, this layer would connect to a vector database or document index and return normalized chunks:
 
@@ -161,7 +165,8 @@ Core functions:
 
 Implementation:
 
-- In the current prototype, the tool layer is represented by the `tools` object and `setTool()` function in `scripts.js`.
+- In the frontend prototype, the tool layer is represented by the `tools` object and `setTool()` function in `scripts.js`.
+- In the backend, `ToolAdapterWorker` in `backend/socartes_backend/agents.py` returns auditable `ToolResult` records for external API, knowledge database, and filesystem adapters.
 - The UI separates API, database, and filesystem adapters to show which external capability produced a result.
 - In a production runtime, each adapter would expose a typed input/output contract, for example:
 
@@ -185,7 +190,8 @@ Core functions:
 
 Implementation:
 
-- In the current prototype, reflection is implemented through `cycleSteps` and `runReflectionCycle()` in `scripts.js`.
+- In the frontend prototype, reflection is implemented through `cycleSteps` and `runReflectionCycle()` in `scripts.js`.
+- In the backend, `ReflectionLoop` in `backend/socartes_backend/agents.py` records critic review, executor revision, and planner update events.
 - Pressing `Run cycle` changes the grounding score and timeline events, showing how a response moves from critique to revision.
 - In a production runtime, reflection events would be persisted as trace data:
 
@@ -215,6 +221,37 @@ flowchart LR
     Critic --> Answer["Traceable learning answer"]
 ```
 
+## Backend API
+
+The backend is intentionally small and self-contained. It does not call a real LLM by default; instead, it exposes the orchestration contract that a production Socartes service can later connect to real model providers, vector databases, and MCP servers.
+
+Backend files:
+
+- `backend/socartes_backend/app.py`: FastAPI app and HTTP routes.
+- `backend/socartes_backend/agents.py`: Planner, Retriever, Tool Adapter, Executor, Critic, Reflection, and Orchestrator classes.
+- `backend/socartes_backend/models.py`: Pydantic request, response, trace, citation, tool, and review schemas.
+- `backend/socartes_backend/knowledge.py`: Local RAG seed knowledge and mock MCP-style tool outputs.
+- `tests/`: pytest coverage for the orchestrator and API.
+
+Endpoints:
+
+| Method | Path | Purpose |
+| --- | --- | --- |
+| `GET` | `/health` | Returns backend status, service name, and version. |
+| `GET` | `/api/v1/agents` | Returns the role boundary and implementation contract for each agent. |
+| `POST` | `/api/v1/learn` | Runs the full Planner -> Retriever -> Tool Adapter -> Executor -> Critic -> Reflection loop. |
+
+Example request:
+
+```bash
+curl -X POST http://127.0.0.1:8000/api/v1/learn \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "goal": "Compare RAG agents with MCP tool-using agents.",
+    "learner_context": "Prefer a concise, citation-backed explanation."
+  }'
+```
+
 ## Repository Structure
 
 ```text
@@ -222,6 +259,17 @@ flowchart LR
 +-- index.html
 +-- styles.css
 +-- scripts.js
++-- pyproject.toml
++-- backend/
+|   +-- socartes_backend/
+|       +-- __init__.py
+|       +-- agents.py
+|       +-- app.py
+|       +-- knowledge.py
+|       +-- models.py
++-- tests/
+|   +-- test_backend_api.py
+|   +-- test_backend_orchestrator.py
 +-- assets/
 |   +-- screenshots/
 |       +-- architecture.svg
@@ -235,6 +283,8 @@ flowchart LR
 
 ## Local Preview
 
+Frontend:
+
 Open `index.html` directly in a browser, or serve the folder with:
 
 ```bash
@@ -242,6 +292,21 @@ python3 -m http.server 4173
 ```
 
 Then open `http://localhost:4173`.
+
+Backend:
+
+```bash
+python3 -m pip install -e '.[dev]'
+uvicorn socartes_backend.app:app --reload
+```
+
+Then open `http://127.0.0.1:8000/docs` or call `/api/v1/learn`.
+
+Tests:
+
+```bash
+pytest -q
+```
 
 ## Roadmap
 
