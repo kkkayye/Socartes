@@ -1,0 +1,53 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="760" viewBox="0 0 1280 760" role="img" aria-labelledby="title desc">
+  <title id="title">Socartes architecture screenshot</title>
+  <desc id="desc">Socartes architecture diagram showing learner goal, multi-agent flow, RAG, MCP tools, and reflection loop.</desc>
+  <rect width="1280" height="760" fill="#f4f6f1"/>
+  <text x="90" y="92" font-family="Inter, Arial, sans-serif" font-size="15" font-weight="800" fill="#1e5d43">SOCARTES ARCHITECTURE</text>
+  <text x="90" y="144" font-family="Inter, Arial, sans-serif" font-size="48" font-weight="800" fill="#17201d">Agent-native learning loop</text>
+  <g font-family="Inter, Arial, sans-serif">
+    <rect x="90" y="226" width="200" height="88" rx="10" fill="#ffffff" stroke="#d9e0da"/>
+    <text x="190" y="263" text-anchor="middle" font-size="14" font-weight="800" fill="#1e5d43">LEARNER GOAL</text>
+    <text x="190" y="291" text-anchor="middle" font-size="21" font-weight="800" fill="#17201d">Study request</text>
+    <rect x="370" y="226" width="200" height="88" rx="10" fill="#e7f1eb" stroke="#8dbfa5"/>
+    <text x="470" y="263" text-anchor="middle" font-size="14" font-weight="800" fill="#1e5d43">PLANNER</text>
+    <text x="470" y="291" text-anchor="middle" font-size="21" font-weight="800" fill="#17201d">Task graph</text>
+    <rect x="650" y="226" width="200" height="88" rx="10" fill="#eef4fb" stroke="#8fb0d6"/>
+    <text x="750" y="263" text-anchor="middle" font-size="14" font-weight="800" fill="#315f95">EXECUTOR</text>
+    <text x="750" y="291" text-anchor="middle" font-size="21" font-weight="800" fill="#17201d">Grounded draft</text>
+    <rect x="930" y="226" width="200" height="88" rx="10" fill="#fff5f2" stroke="#e1bbb6"/>
+    <text x="1030" y="263" text-anchor="middle" font-size="14" font-weight="800" fill="#aa4b43">CRITIC</text>
+    <text x="1030" y="291" text-anchor="middle" font-size="21" font-weight="800" fill="#17201d">Audit result</text>
+    <rect x="370" y="438" width="200" height="88" rx="10" fill="#f7f4ec" stroke="#eadfc9"/>
+    <text x="470" y="475" text-anchor="middle" font-size="14" font-weight="800" fill="#6f4719">RAG</text>
+    <text x="470" y="503" text-anchor="middle" font-size="21" font-weight="800" fill="#17201d">External knowledge</text>
+    <rect x="650" y="438" width="200" height="88" rx="10" fill="#ffffff" stroke="#d9e0da"/>
+    <text x="750" y="475" text-anchor="middle" font-size="14" font-weight="800" fill="#1e5d43">MCP / TOOLS</text>
+    <text x="750" y="503" text-anchor="middle" font-size="21" font-weight="800" fill="#17201d">APIs, DBs, files</text>
+    <rect x="930" y="438" width="200" height="88" rx="10" fill="#ffffff" stroke="#d9e0da"/>
+    <text x="1030" y="475" text-anchor="middle" font-size="14" font-weight="800" fill="#1e5d43">REFLECTION</text>
+    <text x="1030" y="503" text-anchor="middle" font-size="21" font-weight="800" fill="#17201d">Revision memory</text>
+  </g>
+  <g stroke="#7f8b86" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M290 270h80"/>
+    <path d="M570 270h80"/>
+    <path d="M850 270h80"/>
+    <path d="M470 314v124"/>
+    <path d="M570 482h80"/>
+    <path d="M750 438V314"/>
+    <path d="M850 482h80"/>
+    <path d="M1030 438V314"/>
+    <path d="M930 526c-150 106-345 106-560 0"/>
+  </g>
+  <g fill="#7f8b86">
+    <polygon points="370,270 356,262 356,278"/>
+    <polygon points="650,270 636,262 636,278"/>
+    <polygon points="930,270 916,262 916,278"/>
+    <polygon points="470,438 462,424 478,424"/>
+    <polygon points="650,482 636,474 636,490"/>
+    <polygon points="750,314 742,328 758,328"/>
+    <polygon points="930,482 916,474 916,490"/>
+    <polygon points="1030,314 1022,328 1038,328"/>
+    <polygon points="370,526 385,521 382,537"/>
+  </g>
+  <text x="90" y="646" font-family="Inter, Arial, sans-serif" font-size="17" fill="#62706a">Each answer is assembled from explicit roles, retrieved evidence, controlled tools, and critic-driven revisions.</text>
+</svg>

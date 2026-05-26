@@ -1,0 +1,59 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="760" viewBox="0 0 1280 760" role="img" aria-labelledby="title desc">
+  <title id="title">Socartes agent workspace screenshot</title>
+  <desc id="desc">A detailed Socartes workspace screen showing tool adapters and a self-correction timeline.</desc>
+  <rect width="1280" height="760" fill="#f4f6f1"/>
+  <rect x="72" y="58" width="1136" height="644" rx="14" fill="#ffffff" stroke="#d9e0da"/>
+  <text x="118" y="112" font-family="Inter, Arial, sans-serif" font-size="15" font-weight="800" fill="#1e5d43">SOCARTES EXECUTION TRACE</text>
+  <text x="118" y="158" font-family="Inter, Arial, sans-serif" font-size="42" font-weight="800" fill="#17201d">Grounded answer pipeline</text>
+  <rect x="1044" y="98" width="106" height="42" rx="8" fill="#17201d"/>
+  <text x="1097" y="124" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="14" font-weight="800" fill="#fff">Run cycle</text>
+  <g>
+    <rect x="118" y="205" width="310" height="170" rx="10" fill="#fbfcfa" stroke="#d9e0da"/>
+    <text x="146" y="244" font-family="Inter, Arial, sans-serif" font-size="13" font-weight="800" fill="#1e5d43">PLANNER</text>
+    <text x="146" y="276" font-family="Inter, Arial, sans-serif" font-size="24" font-weight="800" fill="#17201d">Task design</text>
+    <text x="146" y="314" font-family="Inter, Arial, sans-serif" font-size="15" fill="#62706a">Defines acceptance criteria, retrieval</text>
+    <text x="146" y="338" font-family="Inter, Arial, sans-serif" font-size="15" fill="#62706a">targets, and execution order.</text>
+    <rect x="146" y="350" width="138" height="8" rx="4" fill="#2f7d5c"/>
+  </g>
+  <g>
+    <rect x="484" y="205" width="310" height="170" rx="10" fill="#eef4fb" stroke="#8fb0d6"/>
+    <text x="512" y="244" font-family="Inter, Arial, sans-serif" font-size="13" font-weight="800" fill="#315f95">EXECUTOR</text>
+    <text x="512" y="276" font-family="Inter, Arial, sans-serif" font-size="24" font-weight="800" fill="#17201d">Synthesis</text>
+    <text x="512" y="314" font-family="Inter, Arial, sans-serif" font-size="15" fill="#62706a">Combines retrieved context with</text>
+    <text x="512" y="338" font-family="Inter, Arial, sans-serif" font-size="15" fill="#62706a">safe tool outputs.</text>
+    <rect x="512" y="350" width="182" height="8" rx="4" fill="#315f95"/>
+  </g>
+  <g>
+    <rect x="850" y="205" width="310" height="170" rx="10" fill="#fff5f2" stroke="#e1bbb6"/>
+    <text x="878" y="244" font-family="Inter, Arial, sans-serif" font-size="13" font-weight="800" fill="#aa4b43">CRITIC</text>
+    <text x="878" y="276" font-family="Inter, Arial, sans-serif" font-size="24" font-weight="800" fill="#17201d">Audit</text>
+    <text x="878" y="314" font-family="Inter, Arial, sans-serif" font-size="15" fill="#62706a">Checks unsupported claims and</text>
+    <text x="878" y="338" font-family="Inter, Arial, sans-serif" font-size="15" fill="#62706a">routes revision requests.</text>
+    <rect x="878" y="350" width="126" height="8" rx="4" fill="#aa4b43"/>
+  </g>
+  <line x1="428" y1="290" x2="484" y2="290" stroke="#7f8b86" stroke-width="3"/>
+  <polygon points="484,290 472,283 472,297" fill="#7f8b86"/>
+  <line x1="794" y1="290" x2="850" y2="290" stroke="#7f8b86" stroke-width="3"/>
+  <polygon points="850,290 838,283 838,297" fill="#7f8b86"/>
+  <rect x="118" y="426" width="498" height="206" rx="10" fill="#ffffff" stroke="#d9e0da"/>
+  <text x="146" y="464" font-family="Inter, Arial, sans-serif" font-size="13" font-weight="800" fill="#1e5d43">MCP / TOOL USE</text>
+  <text x="146" y="496" font-family="Inter, Arial, sans-serif" font-size="24" font-weight="800" fill="#17201d">Controlled adapters</text>
+  <rect x="146" y="526" width="126" height="70" rx="8" fill="#edf6f0" stroke="#8dbfa5"/>
+  <text x="166" y="552" font-family="Inter, Arial, sans-serif" font-size="12" font-weight="900" fill="#17201d">API</text>
+  <text x="166" y="576" font-family="Inter, Arial, sans-serif" font-size="15" font-weight="800" fill="#17201d">External API</text>
+  <rect x="292" y="526" width="126" height="70" rx="8" fill="#fbfcfa" stroke="#d9e0da"/>
+  <text x="312" y="552" font-family="Inter, Arial, sans-serif" font-size="12" font-weight="900" fill="#17201d">DB</text>
+  <text x="312" y="576" font-family="Inter, Arial, sans-serif" font-size="15" font-weight="800" fill="#17201d">Knowledge DB</text>
+  <rect x="438" y="526" width="126" height="70" rx="8" fill="#fbfcfa" stroke="#d9e0da"/>
+  <text x="458" y="552" font-family="Inter, Arial, sans-serif" font-size="12" font-weight="900" fill="#17201d">FS</text>
+  <text x="458" y="576" font-family="Inter, Arial, sans-serif" font-size="15" font-weight="800" fill="#17201d">File system</text>
+  <rect x="662" y="426" width="498" height="206" rx="10" fill="#ffffff" stroke="#d9e0da"/>
+  <text x="690" y="464" font-family="Inter, Arial, sans-serif" font-size="13" font-weight="800" fill="#1e5d43">REFLECTION LOOP</text>
+  <text x="690" y="496" font-family="Inter, Arial, sans-serif" font-size="24" font-weight="800" fill="#17201d">Self-correction trace</text>
+  <circle cx="710" cy="542" r="16" fill="#f5dedb"/>
+  <text x="710" y="548" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="14" font-weight="900" fill="#aa4b43">1</text>
+  <text x="742" y="548" font-family="Inter, Arial, sans-serif" font-size="15" fill="#62706a">Critic flags a missing citation.</text>
+  <circle cx="710" cy="586" r="16" fill="#eef4fb"/>
+  <text x="710" y="592" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="14" font-weight="900" fill="#315f95">2</text>
+  <text x="742" y="592" font-family="Inter, Arial, sans-serif" font-size="15" fill="#62706a">Executor retrieves a stronger source.</text>
+</svg>

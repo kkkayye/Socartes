@@ -1,0 +1,73 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="760" viewBox="0 0 1280 760" role="img" aria-labelledby="title desc">
+  <title id="title">Socartes overview workspace screenshot</title>
+  <desc id="desc">A dashboard style Socartes workspace with a sidebar, goal panel, agent roles, RAG evidence, tool adapters, and reflection trace.</desc>
+  <defs>
+    <filter id="shadow" x="-10%" y="-10%" width="120%" height="130%">
+      <feDropShadow dx="0" dy="18" stdDeviation="22" flood-color="#233027" flood-opacity="0.16"/>
+    </filter>
+  </defs>
+  <rect width="1280" height="760" fill="#f4f6f1"/>
+  <path d="M0 0h1280v760H0z" fill="#f4f6f1"/>
+  <path d="M0 0h600c-70 120-180 180-330 202S62 315 0 415z" fill="#e5f1e9"/>
+  <path d="M1280 0v260c-130-20-250 0-360 60s-210 92-300 96C710 250 855 110 1055 0z" fill="#e6eef8"/>
+  <rect x="54" y="48" width="1172" height="664" rx="14" fill="#ffffff" filter="url(#shadow)"/>
+  <rect x="54" y="48" width="238" height="664" rx="14" fill="#f9fbf8"/>
+  <line x1="292" y1="48" x2="292" y2="712" stroke="#d9e0da"/>
+  <rect x="88" y="86" width="46" height="46" rx="8" fill="#2f7d5c"/>
+  <text x="111" y="116" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="24" font-weight="800" fill="#fff">S</text>
+  <text x="150" y="104" font-family="Inter, Arial, sans-serif" font-size="22" font-weight="800" fill="#17201d">Socartes</text>
+  <text x="150" y="124" font-family="Inter, Arial, sans-serif" font-size="13" fill="#62706a">agent learning lab</text>
+  <g font-family="Inter, Arial, sans-serif" font-size="15" font-weight="700">
+    <rect x="82" y="180" width="176" height="38" rx="8" fill="#e8efe8"/>
+    <text x="104" y="204" fill="#1e5d43">Workspace</text>
+    <text x="104" y="254" fill="#62706a">Agents</text>
+    <text x="104" y="304" fill="#62706a">Evidence</text>
+    <text x="104" y="354" fill="#62706a">Tools</text>
+    <text x="104" y="404" fill="#62706a">Reflection</text>
+  </g>
+  <rect x="82" y="596" width="176" height="72" rx="10" fill="#fff" stroke="#d9e0da"/>
+  <text x="102" y="626" font-family="Inter, Arial, sans-serif" font-size="14" fill="#62706a">Grounding</text>
+  <text x="220" y="626" text-anchor="end" font-family="Inter, Arial, sans-serif" font-size="16" font-weight="800" fill="#1e5d43">86%</text>
+  <rect x="102" y="642" width="136" height="8" rx="4" fill="#e4e9e4"/>
+  <rect x="102" y="642" width="117" height="8" rx="4" fill="#2f7d5c"/>
+  <text x="330" y="94" font-family="Inter, Arial, sans-serif" font-size="13" font-weight="800" fill="#1e5d43">INDEPENDENT SOCARTES PROTOTYPE</text>
+  <text x="330" y="145" font-family="Inter, Arial, sans-serif" font-size="54" font-weight="800" fill="#17201d">Plan, retrieve, execute, critique,</text>
+  <text x="330" y="202" font-family="Inter, Arial, sans-serif" font-size="54" font-weight="800" fill="#17201d">and revise in one trace.</text>
+  <rect x="1056" y="86" width="116" height="46" rx="8" fill="#17201d"/>
+  <text x="1114" y="115" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="15" font-weight="800" fill="#fff">Run cycle</text>
+  <rect x="330" y="246" width="842" height="88" rx="10" fill="#fbfcfa" stroke="#d9e0da"/>
+  <text x="356" y="282" font-family="Inter, Arial, sans-serif" font-size="20" font-weight="800" fill="#17201d">Learning goal</text>
+  <text x="356" y="311" font-family="Inter, Arial, sans-serif" font-size="15" fill="#62706a">Compare retrieval-augmented agents with tool-using agents and produce a concise cited answer.</text>
+  <rect x="870" y="276" width="94" height="28" rx="14" fill="#f8faf7" stroke="#d9e0da"/>
+  <text x="917" y="295" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="12" font-weight="700" fill="#17201d">RAG enabled</text>
+  <rect x="972" y="276" width="112" height="28" rx="14" fill="#f8faf7" stroke="#d9e0da"/>
+  <text x="1028" y="295" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="12" font-weight="700" fill="#17201d">MCP adapters</text>
+  <rect x="1092" y="276" width="62" height="28" rx="14" fill="#f8faf7" stroke="#d9e0da"/>
+  <text x="1123" y="295" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="12" font-weight="700" fill="#17201d">Critic</text>
+  <rect x="330" y="356" width="500" height="298" rx="10" fill="#fff" stroke="#d9e0da"/>
+  <text x="354" y="394" font-family="Inter, Arial, sans-serif" font-size="13" font-weight="800" fill="#1e5d43">MULTI-AGENT ROLES</text>
+  <text x="354" y="425" font-family="Inter, Arial, sans-serif" font-size="24" font-weight="800" fill="#17201d">Planner / Executor / Critic</text>
+  <rect x="354" y="452" width="428" height="46" rx="8" fill="#f7f9f6" stroke="#d9e0da"/>
+  <rect x="360" y="458" width="132" height="34" rx="7" fill="#fff" stroke="#d9e0da"/>
+  <text x="426" y="481" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="14" font-weight="800" fill="#1e5d43">Planner</text>
+  <text x="568" y="481" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="14" font-weight="800" fill="#62706a">Executor</text>
+  <text x="710" y="481" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="14" font-weight="800" fill="#62706a">Critic</text>
+  <rect x="354" y="520" width="428" height="86" rx="8" fill="#fbfcfa" stroke="#d9e0da"/>
+  <rect x="374" y="542" width="44" height="44" rx="8" fill="#e7f1eb"/>
+  <text x="396" y="571" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="22" font-weight="900" fill="#1e5d43">P</text>
+  <text x="436" y="552" font-family="Inter, Arial, sans-serif" font-size="12" font-weight="800" fill="#1e5d43">PLANNER AGENT</text>
+  <text x="436" y="577" font-family="Inter, Arial, sans-serif" font-size="18" font-weight="800" fill="#17201d">Breaks the goal into evidence-backed tasks.</text>
+  <text x="372" y="634" font-family="Inter, Arial, sans-serif" font-size="14" fill="#17201d">1. Define the learner question and expected output.</text>
+  <text x="372" y="660" font-family="Inter, Arial, sans-serif" font-size="14" fill="#17201d">2. Identify external knowledge sources for retrieval.</text>
+  <rect x="854" y="356" width="318" height="298" rx="10" fill="#fff" stroke="#d9e0da"/>
+  <text x="878" y="394" font-family="Inter, Arial, sans-serif" font-size="13" font-weight="800" fill="#1e5d43">RAG CONTEXT</text>
+  <text x="878" y="425" font-family="Inter, Arial, sans-serif" font-size="24" font-weight="800" fill="#17201d">Retrieved knowledge</text>
+  <rect x="878" y="454" width="246" height="54" rx="8" fill="#eef4fb" stroke="#8fb0d6"/>
+  <text x="896" y="477" font-family="Inter, Arial, sans-serif" font-size="12" font-weight="800" fill="#62706a">DOMAIN NOTE</text>
+  <text x="896" y="496" font-family="Inter, Arial, sans-serif" font-size="15" font-weight="800" fill="#17201d">Agent workflow brief</text>
+  <rect x="878" y="522" width="246" height="54" rx="8" fill="#fbfcfa" stroke="#d9e0da"/>
+  <text x="896" y="545" font-family="Inter, Arial, sans-serif" font-size="12" font-weight="800" fill="#62706a">VECTOR DB</text>
+  <text x="896" y="564" font-family="Inter, Arial, sans-serif" font-size="15" font-weight="800" fill="#17201d">Learning systems index</text>
+  <rect x="878" y="590" width="246" height="38" rx="8" fill="#f7f4ec" stroke="#eadfc9"/>
+  <text x="896" y="615" font-family="Inter, Arial, sans-serif" font-size="13" font-weight="800" fill="#6f4719">citation: workflow-note-01</text>
+</svg>

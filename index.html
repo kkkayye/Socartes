@@ -1,0 +1,200 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Socartes | Agent-native learning workspace</title>
+    <meta
+      name="description"
+      content="Socartes is an independent agent-native learning workspace with multi-agent planning, RAG, MCP-style tool use, and reflection loops."
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar" aria-label="Workspace navigation">
+        <a class="brand" href="#workspace" aria-label="Socartes home">
+          <span class="brand-mark">S</span>
+          <span>
+            <strong>Socartes</strong>
+            <small>agent learning lab</small>
+          </span>
+        </a>
+
+        <nav class="nav-list">
+          <a class="active" href="#workspace">Workspace</a>
+          <a href="#agents">Agents</a>
+          <a href="#evidence">Evidence</a>
+          <a href="#tools">Tools</a>
+          <a href="#reflection">Reflection</a>
+        </nav>
+
+        <div class="sidebar-meter" aria-label="Run confidence">
+          <div>
+            <span>Grounding</span>
+            <strong id="groundingScore">86%</strong>
+          </div>
+          <div class="meter-track">
+            <span id="groundingBar"></span>
+          </div>
+        </div>
+      </aside>
+
+      <main class="workspace" id="workspace">
+        <header class="topbar">
+          <div>
+            <p class="eyebrow">Independent Socartes prototype</p>
+            <h1>Plan, retrieve, execute, critique, and revise in one trace.</h1>
+          </div>
+          <button class="primary-action" id="runCycleButton" type="button">
+            Run cycle
+          </button>
+        </header>
+
+        <section class="goal-panel" aria-labelledby="goalTitle">
+          <div>
+            <h2 id="goalTitle">Learning goal</h2>
+            <p>
+              Compare retrieval-augmented agents with tool-using agents for a
+              research workflow. Produce a concise answer with cited gaps.
+            </p>
+          </div>
+          <div class="goal-meta" aria-label="Goal metadata">
+            <span>RAG enabled</span>
+            <span>MCP adapters</span>
+            <span>Critic review</span>
+          </div>
+        </section>
+
+        <section class="dashboard-grid">
+          <article class="agent-stage" id="agents">
+            <div class="section-heading">
+              <p class="eyebrow">Multi-agent roles</p>
+              <h2>Planner / Executor / Critic</h2>
+            </div>
+
+            <div class="role-switcher" role="tablist" aria-label="Agent roles">
+              <button class="role-button active" type="button" data-role="planner" role="tab">
+                Planner
+              </button>
+              <button class="role-button" type="button" data-role="executor" role="tab">
+                Executor
+              </button>
+              <button class="role-button" type="button" data-role="critic" role="tab">
+                Critic
+              </button>
+            </div>
+
+            <div class="agent-card">
+              <div class="agent-badge" id="agentBadge">P</div>
+              <div>
+                <p class="eyebrow" id="agentRole">Planner agent</p>
+                <h3 id="agentTitle">Breaks the goal into evidence-backed tasks.</h3>
+                <p id="agentDescription">
+                  The planner defines the research route, assigns retrieval
+                  targets, and creates acceptance criteria before execution.
+                </p>
+              </div>
+            </div>
+
+            <ol class="task-list" id="taskList">
+              <li>Define the learner question and expected output.</li>
+              <li>Identify external knowledge sources for retrieval.</li>
+              <li>Route grounded subtasks to the executor.</li>
+            </ol>
+          </article>
+
+          <article class="evidence-panel" id="evidence">
+            <div class="section-heading">
+              <p class="eyebrow">RAG context</p>
+              <h2>Retrieved knowledge</h2>
+            </div>
+
+            <div class="source-list">
+              <button class="source-item active" type="button" data-source="paper">
+                <span>Domain note</span>
+                <strong>Agent workflow brief</strong>
+              </button>
+              <button class="source-item" type="button" data-source="db">
+                <span>Vector DB</span>
+                <strong>Learning systems index</strong>
+              </button>
+              <button class="source-item" type="button" data-source="files">
+                <span>Files</span>
+                <strong>Course artifact folder</strong>
+              </button>
+            </div>
+
+            <div class="source-preview">
+              <p class="eyebrow" id="sourceType">Domain note</p>
+              <h3 id="sourceTitle">Agent workflow brief</h3>
+              <p id="sourceBody">
+                Multi-agent systems separate planning, execution, and critique
+                to make reasoning steps inspectable and easier to revise.
+              </p>
+              <div class="citation-row">
+                <span id="sourceCitation">citation: workflow-note-01</span>
+                <span id="sourceConfidence">confidence: high</span>
+              </div>
+            </div>
+          </article>
+        </section>
+
+        <section class="lower-grid">
+          <article class="tool-panel" id="tools">
+            <div class="section-heading">
+              <p class="eyebrow">MCP / tool use</p>
+              <h2>Controlled adapters</h2>
+            </div>
+
+            <div class="tool-grid">
+              <button class="tool-card active" type="button" data-tool="api">
+                <span class="tool-icon">API</span>
+                <strong>External API</strong>
+                <small>Fetch live domain data</small>
+              </button>
+              <button class="tool-card" type="button" data-tool="database">
+                <span class="tool-icon">DB</span>
+                <strong>Knowledge DB</strong>
+                <small>Query indexed notes</small>
+              </button>
+              <button class="tool-card" type="button" data-tool="files">
+                <span class="tool-icon">FS</span>
+                <strong>File system</strong>
+                <small>Read study artifacts</small>
+              </button>
+            </div>
+
+            <pre class="tool-output" id="toolOutput" aria-label="Tool output">adapter: external_api
+status: ready
+result: domain data can be attached to the execution trace</pre>
+          </article>
+
+          <article class="reflection-panel" id="reflection">
+            <div class="section-heading">
+              <p class="eyebrow">Reflection loop</p>
+              <h2>Self-correction trace</h2>
+            </div>
+
+            <div class="timeline" id="reflectionTimeline">
+              <div class="timeline-item current">
+                <span>1</span>
+                <p>Critic flags a missing citation for the comparison claim.</p>
+              </div>
+              <div class="timeline-item">
+                <span>2</span>
+                <p>Executor retrieves a stronger source and rewrites the claim.</p>
+              </div>
+              <div class="timeline-item">
+                <span>3</span>
+                <p>Planner updates the next task with an evidence requirement.</p>
+              </div>
+            </div>
+          </article>
+        </section>
+      </main>
+    </div>
+
+    <script src="scripts.js"></script>
+  </body>
+</html>
