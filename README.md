@@ -16,11 +16,6 @@ The current repository contains a lightweight static frontend and a standalone F
 
 ![Socartes live chat frontend](assets/screenshots/chat.png)
 
-![Socartes overview workspace](assets/screenshots/overview.svg)
-
-![Socartes agent workspace](assets/screenshots/workspace.svg)
-
-![Socartes architecture flow](assets/screenshots/architecture.svg)
 
 ## Agentic AI Capabilities
 
