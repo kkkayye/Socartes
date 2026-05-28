@@ -96,6 +96,24 @@ class StoryRagIndex:
 HAUNTED_PAJAMAS_INDEX = StoryRagIndex(
     [
         StoryChunk(
+            source_id="haunted-pajamas-ch01-sender",
+            title="The Haunted Pajamas, Chapter 1",
+            source_url=PROJECT_GUTENBERG_HAUNTED_PAJAMAS_URL,
+            text=(
+                "The package box is marked Roland Mastermann, Government "
+                "House, Hong Kong, China."
+            ),
+        ),
+        StoryChunk(
+            source_id="haunted-pajamas-ch01-carlton",
+            title="The Haunted Pajamas, Chapter 1",
+            source_url=PROJECT_GUTENBERG_HAUNTED_PAJAMAS_URL,
+            text=(
+                "Jenkins thinks Mastermann is the London gentleman who "
+                "entertained the narrator at the Carlton."
+            ),
+        ),
+        StoryChunk(
             source_id="haunted-pajamas-ch01-muffler",
             title="The Haunted Pajamas, Chapter 1",
             source_url=PROJECT_GUTENBERG_HAUNTED_PAJAMAS_URL,
@@ -105,8 +123,35 @@ HAUNTED_PAJAMAS_INDEX = StoryRagIndex(
             ),
         ),
         StoryChunk(
-            source_id="haunted-pajamas-ch01-present",
+            source_id="haunted-pajamas-ch01-debt",
             title="The Haunted Pajamas, Chapter 1",
+            source_url=PROJECT_GUTENBERG_HAUNTED_PAJAMAS_URL,
+            text=(
+                "Mastermann writes that every puff of the rare cigars reminds "
+                "him that his debt to the narrator is still unpaid."
+            ),
+        ),
+        StoryChunk(
+            source_id="haunted-pajamas-ch02-hickeys-pride",
+            title="The Haunted Pajamas, Chapter 2",
+            source_url=PROJECT_GUTENBERG_HAUNTED_PAJAMAS_URL,
+            text=(
+                "Jenkins says the narrator planned to send Paloma perfectos, "
+                "but the shipping clerk sent Hickey's Pride instead."
+            ),
+        ),
+        StoryChunk(
+            source_id="haunted-pajamas-ch02-twofer",
+            title="The Haunted Pajamas, Chapter 2",
+            source_url=PROJECT_GUTENBERG_HAUNTED_PAJAMAS_URL,
+            text=(
+                "Jenkins explains that a twofer means two for five: two "
+                "cigars for five cents."
+            ),
+        ),
+        StoryChunk(
+            source_id="haunted-pajamas-ch02-present",
+            title="The Haunted Pajamas, Chapter 2",
             source_url=PROJECT_GUTENBERG_HAUNTED_PAJAMAS_URL,
             text=(
                 "After untying the string, the narrator exclaims that the gift "
@@ -114,8 +159,26 @@ HAUNTED_PAJAMAS_INDEX = StoryRagIndex(
             ),
         ),
         StoryChunk(
-            source_id="haunted-pajamas-ch01-tarantula",
-            title="The Haunted Pajamas, Chapter 1",
+            source_id="haunted-pajamas-ch02-memphis-tuffles",
+            title="The Haunted Pajamas, Chapter 2",
+            source_url=PROJECT_GUTENBERG_HAUNTED_PAJAMAS_URL,
+            text=(
+                "When asked what the red pajamas remind him of, Jenkins says "
+                "they remind him of Old Memphis Tuffles."
+            ),
+        ),
+        StoryChunk(
+            source_id="haunted-pajamas-ch02-spider",
+            title="The Haunted Pajamas, Chapter 2",
+            source_url=PROJECT_GUTENBERG_HAUNTED_PAJAMAS_URL,
+            text=(
+                "A little spider dropped on its thread and shot into a fold "
+                "of the pajamas."
+            ),
+        ),
+        StoryChunk(
+            source_id="haunted-pajamas-ch02-tarantula",
+            title="The Haunted Pajamas, Chapter 2",
             source_url=PROJECT_GUTENBERG_HAUNTED_PAJAMAS_URL,
             text=(
                 "Jenkins looks into one leg of the pajamas and says there is a "

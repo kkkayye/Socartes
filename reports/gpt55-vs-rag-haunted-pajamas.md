@@ -2,13 +2,17 @@
 
 ## Abstract
 
-This report compares two ways of answering obscure plot questions: a direct, closed-book query to `gpt-5.5` and the Socartes Story RAG endpoint backed by a small local evidence index. The test uses Francis Perry Elliott's public-domain novel *The Haunted Pajamas* from Project Gutenberg. On four probes, direct `gpt-5.5` answered one question correctly and hallucinated or guessed on three. Socartes RAG answered all three source-supported questions with citations and refused the unsupported Sherlock Holmes control question.
+This report compares two ways of answering obscure plot questions: a direct, closed-book query to `gpt-5.5` and the Socartes Story RAG endpoint backed by a local evidence index. The test uses Francis Perry Elliott's public-domain novel *The Haunted Pajamas* from Project Gutenberg. The evaluation was expanded from 4 probes to 12 probes: 10 answerable plot-detail questions and 2 no-evidence control questions. Direct `gpt-5.5` answered 3 of 12 correctly, while Socartes RAG answered all 10 source-supported questions with citations and refused both unsupported controls.
 
 ![Comparison chart](gpt55-vs-rag-haunted-pajamas.svg)
 
 ## Research Question
 
 Can a small source-grounded RAG system outperform a direct model query when the task depends on obscure fiction details that are unlikely to be reliably memorized by the model?
+
+## Recommended Sample Size
+
+For this diagnostic, 12 questions is a better minimum than 10. Ten answerable questions are enough to cover several detail types, while two control questions test refusal behavior. This keeps the report readable while reducing the chance that one lucky answer dominates the result.
 
 ## Corpus
 
@@ -17,17 +21,24 @@ The corpus is Project Gutenberg EBook #33780, *The Haunted Pajamas* by Francis P
 - Book page: <https://www.gutenberg.org/ebooks/33780>
 - Plain text source: <https://www.gutenberg.org/ebooks/33780.txt.utf-8>
 
-The Socartes RAG index uses three local chunks from Chapter 1:
+The Socartes RAG index uses local chunks from Chapters 1 and 2:
 
 | Source ID | Evidence target |
 | --- | --- |
+| `haunted-pajamas-ch01-sender` | The package is marked Roland Mastermann, Government House, Hong Kong, China. |
+| `haunted-pajamas-ch01-carlton` | Jenkins identifies Mastermann as the London gentleman from the Carlton. |
 | `haunted-pajamas-ch01-muffler` | The narrator first thinks the red silk roll may be a red silk muffler. |
-| `haunted-pajamas-ch01-present` | After the string is untied, the gift is revealed as a suit of pajamas. |
-| `haunted-pajamas-ch01-tarantula` | Jenkins says there is a tarantula in the pajama leg. |
+| `haunted-pajamas-ch01-debt` | Mastermann says every puff of the cigars reminds him of an unpaid debt. |
+| `haunted-pajamas-ch02-hickeys-pride` | Hickey's Pride was sent instead of Paloma perfectos. |
+| `haunted-pajamas-ch02-twofer` | Jenkins explains that a twofer means two for five. |
+| `haunted-pajamas-ch02-present` | After the string is untied, the gift is revealed as a suit of pajamas. |
+| `haunted-pajamas-ch02-memphis-tuffles` | Jenkins says the red pajamas remind him of Old Memphis Tuffles. |
+| `haunted-pajamas-ch02-spider` | A little spider drops into a fold of the pajamas. |
+| `haunted-pajamas-ch02-tarantula` | Jenkins says there is a tarantula in the pajama leg. |
 
 ## Method
 
-Both systems were asked the same four questions.
+Both systems were asked the same 12 questions.
 
 Direct GPT-5.5 condition:
 
@@ -38,49 +49,65 @@ Direct GPT-5.5 condition:
 Socartes RAG condition:
 
 - Endpoint behavior: retrieve a matching source chunk, return a cited answer, or refuse if the database has no evidence.
-- Retrieval fix applied before reporting: title terms such as "Haunted" and "Pajamas" are removed from query scoring, and a chunk must match at least two body evidence terms. This prevents a question like "In The Haunted Pajamas, who kills Sherlock Holmes?" from matching a chunk only because the title appears in the question.
+- Retrieval guard: title terms such as "Haunted" and "Pajamas" are removed from query scoring, and a chunk must match at least two body evidence terms. This prevents a question like "In The Haunted Pajamas, who kills Sherlock Holmes?" from matching a chunk only because the title appears in the question.
 
 ## Questions and Ground Truth
 
 | ID | Question | Ground truth |
 | --- | --- | --- |
-| Q1 | What did the narrator first think the red silk roll might be? | A red silk muffler. |
-| Q2 | What was the gift after the string was untied? | A suit or pair of pajamas. |
-| Q3 | What did Jenkins say was in the pajama leg? | A tarantula, big as a sand crab, and alive. |
-| Q4 | Who kills Sherlock Holmes? | No supporting evidence in this story RAG database; correct behavior is refusal. |
+| Q1 | What name and address were printed on the package box? | Roland Mastermann, Government House, Hong Kong, China. |
+| Q2 | Who did Jenkins think Mastermann was? | The London gentleman who entertained the narrator at the Carlton. |
+| Q3 | What did the narrator first think the red silk roll might be? | A red silk muffler. |
+| Q4 | What debt did every puff of the rare cigars remind Mastermann of? | His debt to the narrator was still unpaid. |
+| Q5 | Which cheap cigar brand was sent by mistake instead of Paloma perfectos? | Hickey's Pride. |
+| Q6 | What did Jenkins say a twofer meant? | Two for five, or two cigars for five cents. |
+| Q7 | What was the gift after the string was untied? | A suit or pair of pajamas. |
+| Q8 | Who did Jenkins say the red pajamas reminded him of? | Old Memphis Tuffles. |
+| Q9 | What dropped into a fold of the pajamas? | A little spider. |
+| Q10 | What did Jenkins say was in the pajama leg? | A tarantula, big as a sand crab, and alive. |
+| Q11 | Who kills Sherlock Holmes? | No supporting evidence in this story RAG database; correct behavior is refusal. |
+| Q12 | What is the name of the spaceship captain? | No supporting evidence in this story RAG database; correct behavior is refusal. |
 
 ## Results
 
-| ID | Direct GPT-5.5 answer | Direct score | Socartes RAG answer | RAG score |
+| ID | Direct GPT-5.5 answer | Direct score | Socartes RAG behavior | RAG score |
 | --- | --- | --- | --- | --- |
-| Q1 | "He first thought it might be a kimono." | Incorrect | Cites `haunted-pajamas-ch01-muffler`: red silk roll may be a red silk muffler. | Correct, grounded |
-| Q2 | "It was a pair of pajamas." | Correct | Cites `haunted-pajamas-ch01-present`: the gift is a suit of pajamas. | Correct, grounded |
-| Q3 | "I'm uncertain, but Jenkins said there was a book in the pajama leg." | Incorrect | Cites `haunted-pajamas-ch01-tarantula`: Jenkins saw a tarantula in the pajama leg. | Correct, grounded |
-| Q4 | "Sir Arthur Conan Doyle." | Incorrect | Refuses: database does not have enough evidence. | Correct refusal |
+| Q1 | Uncertain; did not know the exact name/address. | Incorrect/non-answer | Cites `haunted-pajamas-ch01-sender`. | Correct, grounded |
+| Q2 | Uncertain; did not know who Jenkins thought Mastermann was. | Incorrect/non-answer | Cites `haunted-pajamas-ch01-carlton`. | Correct, grounded |
+| Q3 | Uncertain; guessed a red silk garment/fabric. | Incorrect | Cites `haunted-pajamas-ch01-muffler`. | Correct, grounded |
+| Q4 | Uncertain; did not know the specific debt. | Incorrect/non-answer | Cites `haunted-pajamas-ch01-debt`. | Correct, grounded |
+| Q5 | Uncertain; did not know the cheap cigar brand. | Incorrect/non-answer | Cites `haunted-pajamas-ch02-hickeys-pride`. | Correct, grounded |
+| Q6 | Two cigars for five cents. | Correct | Cites `haunted-pajamas-ch02-twofer`. | Correct, grounded |
+| Q7 | A pair of red silk pajamas. | Correct | Cites `haunted-pajamas-ch02-present`. | Correct, grounded |
+| Q8 | The devil. | Incorrect | Cites `haunted-pajamas-ch02-memphis-tuffles`. | Correct, grounded |
+| Q9 | Uncertain; did not know exactly what dropped into the fold. | Incorrect/non-answer | Cites `haunted-pajamas-ch02-spider`. | Correct, grounded |
+| Q10 | Uncertain; did not know what Jenkins said was in the leg. | Incorrect/non-answer | Cites `haunted-pajamas-ch02-tarantula`. | Correct, grounded |
+| Q11 | Uncertain between Professor Moriarty and Arthur Conan Doyle. | Incorrect/control failure | Refuses because no source evidence exists. | Correct refusal |
+| Q12 | There is no spaceship captain in the novel. | Correct but uncited | Refuses because no source evidence exists. | Correct refusal |
 
 ## Metrics
 
 | Metric | Direct GPT-5.5 | Socartes RAG |
 | --- | ---: | ---: |
-| Plot-grounded accuracy | 25% | 100% |
-| Evidence policy compliance | 0% | 100% |
-| Hallucination/refusal failure rate | 75% | 0% |
+| Answer accuracy | 25% | 100% |
+| Source-grounding policy compliance | 0% | 100% |
+| Answer failure rate | 75% | 0% |
 
 Metric definitions:
 
-- Plot-grounded accuracy counts the Sherlock Holmes control question as correct only when the system refuses because no source evidence exists.
-- Evidence policy compliance means every answer is either supported by a source ID or explicitly refused.
-- Hallucination/refusal failure means an unsupported or contradicted answer was returned instead of a grounded answer or refusal.
+- Answer accuracy counts exact answers on answerable questions and correct no-evidence handling on controls. Q12 was counted as correct for direct `gpt-5.5`, but it was still uncited.
+- Source-grounding policy compliance means every response is either supported by a source ID or explicitly refused because no source evidence exists.
+- Answer failure means an incorrect answer, a non-answer for an answerable question, or an unsupported external answer on a control question.
 
 ## Interpretation
 
-The direct model query behaved like a closed-book answerer. It could guess the central object, pajamas, but failed on the more specific muffler and tarantula details. It also answered the Sherlock Holmes control question with an external guess instead of recognizing that the question is unsupported by the selected story.
+The direct model query was conservative on several obscure details and often admitted uncertainty. That is better than fabricating every answer, but it still failed the learner's task because most answerable plot questions remained unanswered. It also guessed incorrectly on Old Memphis Tuffles and produced external Sherlock Holmes candidates for a control question that should be rejected under a source-grounded policy.
 
-Socartes RAG behaved like a source-bound answerer. It returned exact local source IDs for answerable questions and refused the unsupported control query. The result demonstrates the practical value of RAG for learning workflows where the important requirement is not general fluency, but verifiable alignment with a supplied corpus.
+Socartes RAG behaved like a source-bound answerer. It returned exact local source IDs for answerable questions and refused both unsupported controls. The result demonstrates the practical value of RAG for learning workflows where the important requirement is not general fluency, but verifiable alignment with a supplied corpus.
 
 ## Limitations
 
-This is a small diagnostic evaluation, not a broad benchmark. It uses one public-domain novel, four hand-written questions, and a deterministic three-chunk RAG index. Direct model outputs may vary across runs. The result is still useful for Socartes because it isolates the core product claim: when a learner asks about a specific corpus, the system should prefer database-grounded evidence over model memory.
+This is a diagnostic evaluation, not a broad benchmark. It uses one public-domain novel, 12 hand-written questions, and a deterministic RAG index. Direct model outputs may vary across runs. The result is still useful for Socartes because it isolates the core product claim: when a learner asks about a specific corpus, the system should prefer database-grounded evidence over model memory.
 
 ## Reproducibility
 

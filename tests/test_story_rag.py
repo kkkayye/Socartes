@@ -1,4 +1,5 @@
 from socartes_backend.story_rag import (
+    HAUNTED_PAJAMAS_INDEX,
     PROJECT_GUTENBERG_HAUNTED_PAJAMAS_URL,
     StoryChunk,
     StoryRagIndex,
@@ -79,3 +80,74 @@ def test_story_rag_refuses_unrelated_question_even_when_title_is_named():
     assert answer.grounded is False
     assert answer.source_ids == []
     assert "not have enough evidence" in answer.answer
+
+
+def test_story_rag_covers_expanded_twelve_question_evaluation_set():
+    answerable_questions = [
+        (
+            "What name and address were printed on the package box?",
+            "haunted-pajamas-ch01-sender",
+            "roland mastermann",
+        ),
+        (
+            "Who did Jenkins think Mastermann was?",
+            "haunted-pajamas-ch01-carlton",
+            "carlton",
+        ),
+        (
+            "What did the narrator first think the red silk roll might be?",
+            "haunted-pajamas-ch01-muffler",
+            "red silk muffler",
+        ),
+        (
+            "What debt did Mastermann say every puff of the rare cigars reminded him of?",
+            "haunted-pajamas-ch01-debt",
+            "still unpaid",
+        ),
+        (
+            "Which cheap cigar brand was sent by mistake instead of Paloma perfectos?",
+            "haunted-pajamas-ch02-hickeys-pride",
+            "hickey's pride",
+        ),
+        (
+            "What did Jenkins say a twofer meant?",
+            "haunted-pajamas-ch02-twofer",
+            "two for five",
+        ),
+        (
+            "What was the gift after the string was untied?",
+            "haunted-pajamas-ch02-present",
+            "suit of pajamas",
+        ),
+        (
+            "Who did Jenkins say the red pajamas reminded him of?",
+            "haunted-pajamas-ch02-memphis-tuffles",
+            "old memphis tuffles",
+        ),
+        (
+            "What dropped into a fold of the pajamas?",
+            "haunted-pajamas-ch02-spider",
+            "little spider",
+        ),
+        (
+            "What did Jenkins say was in the pajama leg?",
+            "haunted-pajamas-ch02-tarantula",
+            "tarantula",
+        ),
+    ]
+
+    for question, source_id, expected_text in answerable_questions:
+        answer = HAUNTED_PAJAMAS_INDEX.ask(question)
+        assert answer.grounded is True, question
+        assert answer.source_ids == [source_id], question
+        assert expected_text in answer.answer.lower(), question
+
+    control_questions = [
+        "In The Haunted Pajamas, who kills Sherlock Holmes?",
+        "In The Haunted Pajamas, what is the name of the spaceship captain?",
+    ]
+
+    for question in control_questions:
+        answer = HAUNTED_PAJAMAS_INDEX.ask(question)
+        assert answer.grounded is False, question
+        assert answer.source_ids == [], question
