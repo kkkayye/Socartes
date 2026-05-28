@@ -2,6 +2,7 @@ from fastapi import FastAPI
 
 from .agents import SocartesOrchestrator
 from .models import StudyRequest, StudyTrace
+from .story_rag import HAUNTED_PAJAMAS_INDEX, StoryAnswer, StoryQuestion
 
 VERSION = "0.1.0"
 
@@ -36,3 +37,8 @@ def learn(request: StudyRequest) -> StudyTrace:
         goal=request.goal,
         learner_context=request.learner_context,
     )
+
+
+@app.post("/api/v1/story-rag/ask", response_model=StoryAnswer)
+def ask_story_rag(request: StoryQuestion) -> StoryAnswer:
+    return HAUNTED_PAJAMAS_INDEX.ask(request.question)

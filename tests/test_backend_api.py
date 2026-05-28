@@ -47,3 +47,18 @@ def test_agents_endpoint_documents_each_backend_worker():
     assert "planner" in payload["agents"]
     assert "executor" in payload["agents"]
     assert "critic" in payload["agents"]
+
+
+def test_story_rag_endpoint_returns_grounded_source_id():
+    client = TestClient(app)
+
+    response = client.post(
+        "/api/v1/story-rag/ask",
+        json={"question": "What did Jenkins say was in the pajama leg?"},
+    )
+
+    assert response.status_code == 200
+    payload = response.json()
+    assert payload["grounded"] is True
+    assert payload["source_ids"] == ["haunted-pajamas-ch01-tarantula"]
+    assert "tarantula" in payload["answer"].lower()

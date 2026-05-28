@@ -235,6 +235,7 @@ Endpoints:
 | `GET` | `/health` | Returns backend status, service name, and version. |
 | `GET` | `/api/v1/agents` | Returns the role boundary and implementation contract for each agent. |
 | `POST` | `/api/v1/learn` | Runs the full Planner -> Retriever -> Tool Adapter -> Executor -> Critic -> Reflection loop. |
+| `POST` | `/api/v1/story-rag/ask` | Tests source-grounded RAG answers against an obscure public-domain novel. |
 
 Example request:
 
@@ -246,6 +247,23 @@ curl -X POST http://127.0.0.1:8000/api/v1/learn \
     "learner_context": "Prefer a concise, citation-backed explanation."
   }'
 ```
+
+Story RAG grounding test:
+
+The repository includes a small RAG test built from Project Gutenberg's public-domain text of [The Haunted Pajamas](https://www.gutenberg.org/ebooks/33780) by Francis Perry Elliott. The test asks obscure plot-detail questions that should be answered only when the matching source chunk is present.
+
+Example:
+
+```bash
+curl -X POST http://127.0.0.1:8000/api/v1/story-rag/ask \
+  -H 'Content-Type: application/json' \
+  -d '{"question": "What did Jenkins say was in the pajama leg?"}'
+```
+
+Expected behavior:
+
+- If the database contains the supporting chunk, the answer includes `grounded: true` and the matching `source_ids`.
+- If the database does not contain evidence, the answer refuses with `grounded: false` instead of guessing from general model knowledge.
 
 ## Repository Structure
 
@@ -262,9 +280,11 @@ curl -X POST http://127.0.0.1:8000/api/v1/learn \
 |       +-- app.py
 |       +-- knowledge.py
 |       +-- models.py
+|       +-- story_rag.py
 +-- tests/
 |   +-- test_backend_api.py
 |   +-- test_backend_orchestrator.py
+|   +-- test_story_rag.py
 +-- assets/
 |   +-- screenshots/
 |       +-- architecture.svg
