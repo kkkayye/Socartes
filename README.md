@@ -265,6 +265,13 @@ Expected behavior:
 - If the database contains the supporting chunk, the answer includes `grounded: true` and the matching `source_ids`.
 - If the database does not contain evidence, the answer refuses with `grounded: false` instead of guessing from general model knowledge.
 
+## Evaluation
+
+The repository includes a paper-style comparison between direct `gpt-5.5` answers and Socartes RAG on obscure fiction questions:
+
+- [Source-Grounded RAG vs Direct GPT-5.5 on Obscure Fiction QA](reports/gpt55-vs-rag-haunted-pajamas.md)
+- [Comparison chart](reports/gpt55-vs-rag-haunted-pajamas.svg)
+
 ## Repository Structure
 
 ```text
@@ -285,6 +292,9 @@ Expected behavior:
 |   +-- test_backend_api.py
 |   +-- test_backend_orchestrator.py
 |   +-- test_story_rag.py
++-- reports/
+|   +-- gpt55-vs-rag-haunted-pajamas.md
+|   +-- gpt55-vs-rag-haunted-pajamas.svg
 +-- assets/
 |   +-- screenshots/
 |       +-- architecture.svg

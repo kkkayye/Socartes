@@ -33,6 +33,8 @@ STOPWORDS = {
     "with",
 }
 
+MIN_RETRIEVAL_SCORE = 2
+
 
 class StoryChunk(BaseModel):
     source_id: str
@@ -63,16 +65,17 @@ def tokenize(text: str) -> set[str]:
 class StoryRagIndex:
     def __init__(self, chunks: list[StoryChunk]) -> None:
         self.chunks = chunks
+        self.title_terms = set().union(*(tokenize(chunk.title) for chunk in chunks))
 
     def ask(self, question: str) -> StoryAnswer:
-        query_terms = tokenize(question)
+        query_terms = tokenize(question) - self.title_terms
         scored_chunks = [
-            (len(query_terms & tokenize(chunk.text + " " + chunk.title)), chunk)
+            (len(query_terms & tokenize(chunk.text)), chunk)
             for chunk in self.chunks
         ]
         score, chunk = max(scored_chunks, key=lambda item: item[0], default=(0, None))
 
-        if chunk is None or score == 0:
+        if chunk is None or score < MIN_RETRIEVAL_SCORE:
             return StoryAnswer(
                 answer=(
                     "The story RAG database does not have enough evidence to "

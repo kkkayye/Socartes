@@ -69,3 +69,13 @@ def test_story_rag_refuses_when_database_has_no_plot_evidence():
     assert answer.grounded is False
     assert answer.source_ids == []
     assert "not have enough evidence" in answer.answer
+
+
+def test_story_rag_refuses_unrelated_question_even_when_title_is_named():
+    index = haunted_pajamas_test_index()
+
+    answer = index.ask("In The Haunted Pajamas, who kills Sherlock Holmes?")
+
+    assert answer.grounded is False
+    assert answer.source_ids == []
+    assert "not have enough evidence" in answer.answer

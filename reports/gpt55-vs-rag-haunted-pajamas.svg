@@ -1,0 +1,56 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="560" viewBox="0 0 960 560" role="img" aria-labelledby="title desc">
+  <title id="title">GPT-5.5 Direct Query vs Socartes RAG Evaluation</title>
+  <desc id="desc">Bar chart comparing plot-grounded accuracy, evidence policy compliance, and failure rate on four obscure fiction questions from The Haunted Pajamas.</desc>
+  <rect width="960" height="560" fill="#f8fafc"/>
+  <text x="48" y="54" fill="#111827" font-family="Arial, sans-serif" font-size="26" font-weight="700">Direct GPT-5.5 vs Socartes RAG</text>
+  <text x="48" y="82" fill="#4b5563" font-family="Arial, sans-serif" font-size="15">Obscure fiction QA on Francis Perry Elliott's The Haunted Pajamas, Project Gutenberg #33780. N=4 probes.</text>
+
+  <line x1="86" y1="420" x2="890" y2="420" stroke="#111827" stroke-width="1.5"/>
+  <line x1="86" y1="120" x2="86" y2="420" stroke="#111827" stroke-width="1.5"/>
+  <g font-family="Arial, sans-serif" font-size="12" fill="#6b7280">
+    <text x="54" y="424">0</text>
+    <text x="47" y="364">20</text>
+    <text x="47" y="304">40</text>
+    <text x="47" y="244">60</text>
+    <text x="47" y="184">80</text>
+    <text x="40" y="124">100</text>
+  </g>
+  <g stroke="#e5e7eb" stroke-width="1">
+    <line x1="86" y1="360" x2="890" y2="360"/>
+    <line x1="86" y1="300" x2="890" y2="300"/>
+    <line x1="86" y1="240" x2="890" y2="240"/>
+    <line x1="86" y1="180" x2="890" y2="180"/>
+    <line x1="86" y1="120" x2="890" y2="120"/>
+  </g>
+
+  <g font-family="Arial, sans-serif" font-size="13" fill="#111827">
+    <rect x="152" y="345" width="56" height="75" rx="4" fill="#2563eb"/>
+    <rect x="226" y="420" width="56" height="0" rx="4" fill="#10b981"/>
+    <rect x="300" y="195" width="56" height="225" rx="4" fill="#ef4444"/>
+    <text x="167" y="337" font-weight="700">25%</text>
+    <text x="242" y="412" font-weight="700">0%</text>
+    <text x="315" y="187" font-weight="700">75%</text>
+    <text x="190" y="455" text-anchor="middle" font-size="15" font-weight="700">Direct GPT-5.5</text>
+  </g>
+
+  <g font-family="Arial, sans-serif" font-size="13" fill="#111827">
+    <rect x="604" y="120" width="56" height="300" rx="4" fill="#2563eb"/>
+    <rect x="678" y="120" width="56" height="300" rx="4" fill="#10b981"/>
+    <rect x="752" y="420" width="56" height="0" rx="4" fill="#ef4444"/>
+    <text x="614" y="112" font-weight="700">100%</text>
+    <text x="688" y="112" font-weight="700">100%</text>
+    <text x="768" y="412" font-weight="700">0%</text>
+    <text x="706" y="455" text-anchor="middle" font-size="15" font-weight="700">Socartes RAG</text>
+  </g>
+
+  <g font-family="Arial, sans-serif" font-size="13" fill="#374151">
+    <rect x="124" y="490" width="14" height="14" fill="#2563eb"/>
+    <text x="146" y="502">Plot-grounded accuracy</text>
+    <rect x="350" y="490" width="14" height="14" fill="#10b981"/>
+    <text x="372" y="502">Evidence policy compliance</text>
+    <rect x="620" y="490" width="14" height="14" fill="#ef4444"/>
+    <text x="642" y="502">Hallucination/refusal failure rate</text>
+  </g>
+
+  <text x="48" y="536" fill="#6b7280" font-family="Arial, sans-serif" font-size="12">Scoring counts the control question as correct only when the system refuses due to missing source evidence.</text>
+</svg>
