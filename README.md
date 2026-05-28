@@ -271,6 +271,7 @@ The repository includes a paper-style comparison between direct `gpt-5.5` answer
 
 - [Source-Grounded RAG vs Direct GPT-5.5 on Obscure Fiction QA](reports/gpt55-vs-rag-haunted-pajamas.md)
 - [Comparison chart](reports/gpt55-vs-rag-haunted-pajamas.svg)
+- [PDF report](reports/gpt55-vs-rag-haunted-pajamas.pdf)
 
 ## Repository Structure
 
@@ -294,6 +295,7 @@ The repository includes a paper-style comparison between direct `gpt-5.5` answer
 |   +-- test_story_rag.py
 +-- reports/
 |   +-- gpt55-vs-rag-haunted-pajamas.md
+|   +-- gpt55-vs-rag-haunted-pajamas.pdf
 |   +-- gpt55-vs-rag-haunted-pajamas.svg
 +-- assets/
 |   +-- screenshots/
