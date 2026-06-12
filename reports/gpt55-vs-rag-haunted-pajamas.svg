@@ -1,56 +1,39 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="960" height="560" viewBox="0 0 960 560" role="img" aria-labelledby="title desc">
-  <title id="title">GPT-5.5 Direct Query vs Socartes RAG Evaluation</title>
-  <desc id="desc">Bar chart comparing answer accuracy, source-grounding policy compliance, and answer failure rate on twelve obscure fiction questions from The Haunted Pajamas.</desc>
-  <rect width="960" height="560" fill="#f8fafc"/>
-  <text x="48" y="54" fill="#111827" font-family="Arial, sans-serif" font-size="26" font-weight="700">Direct GPT-5.5 vs Socartes RAG</text>
-  <text x="48" y="82" fill="#4b5563" font-family="Arial, sans-serif" font-size="15">Obscure fiction QA on Francis Perry Elliott's The Haunted Pajamas, Project Gutenberg #33780. N=12 probes.</text>
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="480" viewBox="0 0 960 480" role="img" aria-labelledby="title desc">
+  <title id="title">Socartes full-novel RAG capability test</title>
+  <desc id="desc">Three-condition table showing a closed-book GPT probe, legacy top-1 Socartes baseline, and repaired full-novel Socartes RAG results after an extended question set.</desc>
+  <rect width="960" height="480" fill="#ffffff"/>
+  <text x="42" y="52" fill="#0f172a" font-family="Arial, sans-serif" font-size="26" font-weight="700">Socartes RAG: Full-Novel Capability Test</text>
+  <text x="42" y="82" fill="#475569" font-family="Arial, sans-serif" font-size="14">42-question diagnostic; full-novel RAG uses hybrid RRF reranking and a direct-support gate.</text>
 
-  <line x1="86" y1="420" x2="890" y2="420" stroke="#111827" stroke-width="1.5"/>
-  <line x1="86" y1="120" x2="86" y2="420" stroke="#111827" stroke-width="1.5"/>
-  <g font-family="Arial, sans-serif" font-size="12" fill="#6b7280">
-    <text x="54" y="424">0</text>
-    <text x="47" y="364">20</text>
-    <text x="47" y="304">40</text>
-    <text x="47" y="244">60</text>
-    <text x="47" y="184">80</text>
-    <text x="40" y="124">100</text>
-  </g>
-  <g stroke="#e5e7eb" stroke-width="1">
-    <line x1="86" y1="360" x2="890" y2="360"/>
-    <line x1="86" y1="300" x2="890" y2="300"/>
-    <line x1="86" y1="240" x2="890" y2="240"/>
-    <line x1="86" y1="180" x2="890" y2="180"/>
-    <line x1="86" y1="120" x2="890" y2="120"/>
-  </g>
+  <g font-family="Arial, sans-serif">
+    <rect x="42" y="112" width="876" height="44" rx="6" fill="#0f172a"/>
+    <text x="62" y="141" font-size="14" font-weight="700" fill="#ffffff">Condition</text>
+    <text x="505" y="141" font-size="14" font-weight="700" fill="#ffffff">Answerable</text>
+    <text x="650" y="141" font-size="14" font-weight="700" fill="#ffffff">Q11-Q12</text>
+    <text x="784" y="141" font-size="14" font-weight="700" fill="#ffffff">Role</text>
 
-  <g font-family="Arial, sans-serif" font-size="13" fill="#111827">
-    <rect x="152" y="345" width="56" height="75" rx="4" fill="#2563eb"/>
-    <rect x="226" y="420" width="56" height="0" rx="4" fill="#10b981"/>
-    <rect x="300" y="195" width="56" height="225" rx="4" fill="#ef4444"/>
-    <text x="167" y="337" font-weight="700">25%</text>
-    <text x="242" y="412" font-weight="700">0%</text>
-    <text x="315" y="187" font-weight="700">75%</text>
-    <text x="190" y="455" text-anchor="middle" font-size="15" font-weight="700">Direct GPT-5.5</text>
-  </g>
+    <rect x="42" y="172" width="876" height="68" rx="6" fill="#f8fafc" stroke="#cbd5e1"/>
+    <text x="62" y="201" font-size="16" font-weight="700" fill="#0f172a">GPT-5.5 closed-book probe</text>
+    <text x="62" y="224" font-size="13" fill="#64748b">No search, no database</text>
+    <text x="512" y="214" font-size="27" font-weight="700" fill="#b45309">2/10</text>
+    <text x="662" y="214" font-size="27" font-weight="700" fill="#b45309">1/2</text>
+    <text x="786" y="206" font-size="13" fill="#334155">reference</text>
 
-  <g font-family="Arial, sans-serif" font-size="13" fill="#111827">
-    <rect x="604" y="120" width="56" height="300" rx="4" fill="#2563eb"/>
-    <rect x="678" y="120" width="56" height="300" rx="4" fill="#10b981"/>
-    <rect x="752" y="420" width="56" height="0" rx="4" fill="#ef4444"/>
-    <text x="614" y="112" font-weight="700">100%</text>
-    <text x="688" y="112" font-weight="700">100%</text>
-    <text x="768" y="412" font-weight="700">0%</text>
-    <text x="706" y="455" text-anchor="middle" font-size="15" font-weight="700">Socartes RAG</text>
+    <rect x="42" y="254" width="876" height="68" rx="6" fill="#f8fafc" stroke="#cbd5e1"/>
+    <text x="62" y="283" font-size="16" font-weight="700" fill="#0f172a">Baseline: legacy top-1 retrieval</text>
+    <text x="62" y="306" font-size="13" fill="#64748b">Single highest lexical-overlap chunk</text>
+    <text x="512" y="296" font-size="27" font-weight="700" fill="#b45309">22/40</text>
+    <text x="662" y="296" font-size="27" font-weight="700" fill="#b45309">1/2</text>
+    <text x="786" y="288" font-size="13" fill="#334155">baseline</text>
+
+    <rect x="42" y="336" width="876" height="76" rx="6" fill="#ecfdf5" stroke="#22c55e" stroke-width="2"/>
+    <text x="62" y="367" font-size="17" font-weight="700" fill="#064e3b">Socartes full-novel automatic index</text>
+    <text x="62" y="391" font-size="13" fill="#166534">1047 deterministic automatic chunks</text>
+    <text x="508" y="380" font-size="30" font-weight="700" fill="#15803d">40/40</text>
+    <text x="662" y="380" font-size="30" font-weight="700" fill="#15803d">2/2</text>
+    <text x="786" y="372" font-size="13" font-weight="700" fill="#064e3b">main test</text>
   </g>
 
-  <g font-family="Arial, sans-serif" font-size="13" fill="#374151">
-    <rect x="124" y="490" width="14" height="14" fill="#2563eb"/>
-    <text x="146" y="502">Answer accuracy</text>
-    <rect x="350" y="490" width="14" height="14" fill="#10b981"/>
-    <text x="372" y="502">Source-grounding policy compliance</text>
-    <rect x="620" y="490" width="14" height="14" fill="#ef4444"/>
-    <text x="642" y="502">Answer failure rate</text>
-  </g>
-
-  <text x="48" y="536" fill="#6b7280" font-family="Arial, sans-serif" font-size="12">Scoring uses 10 answerable plot-detail probes and 2 no-evidence controls; source-bound refusal counts as correct.</text>
+  <rect x="42" y="434" width="876" height="28" rx="6" fill="#ecfdf5" stroke="#86efac"/>
+  <text x="62" y="453" fill="#166534" font-family="Arial, sans-serif" font-size="12">Hybrid RRF plus reranking reaches 40/40 answerable questions while the support gate keeps refusals at 2/2.</text>
 </svg>

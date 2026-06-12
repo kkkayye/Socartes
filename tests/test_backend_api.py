@@ -60,5 +60,5 @@ def test_story_rag_endpoint_returns_grounded_source_id():
     assert response.status_code == 200
     payload = response.json()
     assert payload["grounded"] is True
-    assert payload["source_ids"] == ["haunted-pajamas-ch02-tarantula"]
+    assert "haunted-pajamas-ch02-tarantula" in payload["source_ids"]
     assert "tarantula" in payload["answer"].lower()
