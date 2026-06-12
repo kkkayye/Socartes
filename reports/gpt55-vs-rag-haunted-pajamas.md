@@ -100,10 +100,10 @@ The main RAG result after adding Q33-Q42 is 40/40 answerable retrieval and 2/2 c
 | Configuration | Original Q1-Q10 | New Q13-Q42 | Overall answerable | Correct refusal Q11-Q12 |
 | --- | ---: | ---: | ---: | ---: |
 | Baseline: legacy top-1 lexical retrieval | 7/10 | 15/30 | 22/40 | 1/2 |
-| Hybrid RRF + rerank without support gate | 10/10 | 30/30 | 40/40 | 1/2 |
+| Hybrid RRF + rerank without support gate | 10/10 | 30/30 | 40/40 | 0/2 |
 | Full setting: hybrid RRF + rerank plus support gate | 10/10 | 30/30 | 40/40 | 2/2 |
 
-The ablation separates the two failure modes. The legacy top-1 baseline misses Q2, Q5, and Q10 because the answer phrase is in a lower-ranked or adjacent chunk. Hybrid RRF recall and reranking recover those answer passages and the harder Q13-Q42 extension set. The direct-support gate then fixes Q12 by refusing to answer the spaceship-captain question from an unrelated Captain Clutchem police context.
+The ablation separates the two failure modes. The legacy top-1 baseline misses Q2, Q5, and Q10 because the answer phrase is in a lower-ranked or adjacent chunk. Hybrid RRF recall and reranking recover those answer passages and the harder Q13-Q42 extension set, but they also widen the evidence window enough for both unsupported controls to become false hits. The direct-support gate fixes this by refusing Q11 and Q12 when the retrieved evidence does not directly support the requested target.
 The added Q13-Q42 extension shows why simple top-k expansion is not enough: several correct passages are outside the lexical top-100 window or require relation matching rather than direct token overlap.
 
 ## Baseline Error Analysis
@@ -116,7 +116,7 @@ Within the original Q1-Q10 set, the failed answerable questions in the legacy to
 | Q5 | `full-novel-auto-0019` | 4 | The Hickey's Pride evidence is near the top but misses top-3 under pure word-overlap ranking. |
 | Q10 | `full-novel-auto-0041` | 30 | The tarantula evidence is nearby but receives only one overlapping query term, while earlier pajama-leg chunks tie at score 2. |
 
-Q12 fails in the no-support-gate ablation for a different reason. The novel contains a real `Captain` name, Captain Clutchem, in an unrelated police context. The question asks for a spaceship captain, but token overlap sees `captain` and `name`, reaches the refusal threshold, and returns a false hit. The repaired support gate requires the target terms from `name of the spaceship captain` to appear in the retrieved evidence, so it refuses because `spaceship` is absent.
+Q11 and Q12 fail in the no-support-gate ablation for different weak-match reasons. Q11 asks who kills Sherlock Holmes, and wide retrieval pulls in story passages containing names and violence-adjacent context even though no Sherlock Holmes answer exists in the novel. Q12 asks for a spaceship captain; the novel contains a real `Captain` name, Captain Clutchem, in an unrelated police context, so token overlap sees `captain` and `name` and returns a false hit. The repaired support gate requires the target terms from the question to appear in the retrieved evidence, so it refuses both controls rather than converting weak overlap into grounded answers.
 ## Extended-Question Error Analysis
 Before the hybrid repair, Q16, Q17, Q19, Q21, and Q22 failed even though each expected answer existed in the automatic full-novel index. Their first matching evidence was outside the final evidence window: Q16 and Q17 first appeared at rank 7, Q21 at rank 16, Q22 at rank 10, and Q19 at rank 62.
 The later Q23-Q32 extension exposed the next limit of pure lexical recall. Q23 first appeared at lexical rank 287, Q27 at rank 542, and Q29 at rank 67. Q24 appeared at rank 29 but required the reranker to prefer the exact "Miss Billings" correction passage over generic Frances/Lightnut context. Hybrid RRF recall brings vector candidates into the candidate pool, and heuristic support-aware reranking selects the passage that directly answers the question. The added Q33-Q42 diagnostic stays correct under the same pipeline.

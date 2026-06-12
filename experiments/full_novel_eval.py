@@ -564,8 +564,8 @@ def build_report(corpus_path: Path, target_words: int) -> dict[str, Any]:
         "interpretation": [
             "The legacy top-1 retriever misses answer evidence when the answer phrase is outside the highest-scoring chunk.",
             "Hybrid RRF recall with one adjacent chunk on each side recovers the answer evidence for Q1-Q10.",
-            "The reranked 300-candidate pool recovers the extended Q13-Q42 evidence while preserving refusal behavior.",
-            "The direct-support gate is required to reject the spaceship-captain control instead of answering from an unrelated Captain Clutchem context.",
+            "The reranked 300-candidate pool recovers the extended Q13-Q42 evidence but, without the support gate, both unsupported controls become false hits.",
+            "The direct-support gate is required to reject both the Sherlock Holmes control and the spaceship-captain control instead of answering from weak lexical matches.",
         ],
     }
 
