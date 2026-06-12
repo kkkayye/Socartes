@@ -3,7 +3,7 @@
   <desc id="desc">Three-condition table showing a closed-book GPT probe, legacy top-1 Socartes baseline, and repaired full-novel Socartes RAG results after an extended question set.</desc>
   <rect width="960" height="480" fill="#ffffff"/>
   <text x="42" y="52" fill="#0f172a" font-family="Arial, sans-serif" font-size="26" font-weight="700">Socartes RAG: Full-Novel Capability Test</text>
-  <text x="42" y="82" fill="#475569" font-family="Arial, sans-serif" font-size="14">42-question diagnostic; full-novel RAG uses hybrid RRF reranking and a direct-support gate.</text>
+  <text x="42" y="82" fill="#475569" font-family="Arial, sans-serif" font-size="14">42-question diagnostic; full-novel RAG uses BM25 + vector RRF reranking and a direct-support gate.</text>
 
   <g font-family="Arial, sans-serif">
     <rect x="42" y="112" width="876" height="44" rx="6" fill="#0f172a"/>
@@ -35,5 +35,5 @@
   </g>
 
   <rect x="42" y="434" width="876" height="28" rx="6" fill="#ecfdf5" stroke="#86efac"/>
-  <text x="62" y="453" fill="#166534" font-family="Arial, sans-serif" font-size="12">Hybrid RRF plus reranking reaches 40/40 answerable questions while the support gate keeps refusals at 2/2.</text>
+  <text x="62" y="453" fill="#166534" font-family="Arial, sans-serif" font-size="12">BM25 + vector RRF plus reranking reaches 40/40 answerable questions while the support gate keeps refusals at 2/2.</text>
 </svg>

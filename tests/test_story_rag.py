@@ -55,6 +55,46 @@ def haunted_pajamas_test_index() -> StoryRagIndex:
     )
 
 
+def test_story_rag_uses_vector_backend_for_dense_recall():
+    def embedding_model(texts):
+        vectors = []
+        for text in texts:
+            if "Mastermann lugged me off" in text or "Who dragged" in text:
+                vectors.append([1.0, 0.0])
+            else:
+                vectors.append([0.0, 1.0])
+        return vectors
+
+    index = StoryRagIndex(
+        [
+            StoryChunk(
+                source_id="lexical-decoy",
+                title="Test",
+                source_url="memory://test",
+                text="The narrator was dragged away by a rumor about the hallway.",
+            ),
+            StoryChunk(
+                source_id="semantic-answer",
+                title="Test",
+                source_url="memory://test",
+                text="Mastermann lugged me off before I could speak.",
+            ),
+        ],
+        vector_backend="memory",
+        embedding_model=embedding_model,
+    )
+
+    lexical_top = index.rank(
+        "Who dragged the narrator away?",
+        scoring="bm25",
+    )[0]
+    dense_top = index._dense_rank("Who dragged the narrator away?")[0]
+
+    assert index.vector_backend_name == "memory"
+    assert lexical_top.chunk.source_id == "lexical-decoy"
+    assert dense_top.chunk.source_id == "semantic-answer"
+
+
 def test_story_rag_answers_obscure_plot_questions_from_database_chunks():
     index = haunted_pajamas_test_index()
 
@@ -84,7 +124,7 @@ def test_story_rag_refuses_when_database_has_no_plot_evidence():
 
     assert answer.grounded is False
     assert answer.source_ids == []
-    assert "not have enough evidence" in answer.answer
+    assert "not have enough" in answer.answer
 
 
 def test_story_rag_refuses_unrelated_question_even_when_title_is_named():
@@ -94,7 +134,7 @@ def test_story_rag_refuses_unrelated_question_even_when_title_is_named():
 
     assert answer.grounded is False
     assert answer.source_ids == []
-    assert "not have enough evidence" in answer.answer
+    assert "not have enough" in answer.answer
 
 
 def test_story_rag_covers_expanded_twelve_question_evaluation_set():

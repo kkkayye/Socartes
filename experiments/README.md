@@ -6,7 +6,8 @@ This experiment evaluates `StoryRagIndex` against a full-novel automatic index a
 
 - Main experiment: build a deterministic automatic index from the full Project Gutenberg text of *The Haunted Pajamas*.
 - Questions: evaluate 42 diagnostic questions: Q1-Q10 original answerable questions, Q13-Q42 extension answerable questions, and Q11-Q12 unsupported controls.
-- Retriever: hybrid RRF recall, reranking, `top_k=5`, `adjacent_hops=1`, title-term guard, `MIN_RETRIEVAL_SCORE=2`, and a direct-support refusal gate.
+- Retriever: hybrid RRF recall with BM25 plus real vector recall, reranking, `top_k=5`, `adjacent_hops=1`, title-term guard, `MIN_RETRIEVAL_SCORE=2`, and a direct-support refusal gate.
+- Vector layer: `StoryVectorScorer` uses `sqlite-vec` when the optional `vector` extra is installed, and falls back to deterministic in-memory cosine search for dependency-free reproduction.
 
 ## Reproduce
 
@@ -40,4 +41,4 @@ Default chunking uses paragraph accumulation with `--chunk-target-words 100`. Wi
 ## Interpretation
 
 
-The legacy top-1 baseline misses Q2, Q5, and Q10 in the original set and reaches only 22/40 across all answerable questions because many answer passages are lower-ranked, adjacent, or semantically related rather than exact lexical matches. Hybrid RRF recall and reranking recover the full Q1-Q10 and Q13-Q42 answerable set. The support gate then fixes Q12 by refusing to answer the spaceship-captain question from the unrelated Captain Clutchem police context.
+The legacy top-1 baseline misses Q2, Q5, and Q10 in the original set and reaches only 22/40 across all answerable questions because many answer passages are lower-ranked, adjacent, or semantically related rather than exact lexical matches. Hybrid RRF recall combines BM25 and vector candidates before reranking, recovering the full Q1-Q10 and Q13-Q42 answerable set. The support gate then fixes Q12 by refusing to answer the spaceship-captain question from the unrelated Captain Clutchem police context.

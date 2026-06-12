@@ -1,8 +1,10 @@
 from collections import Counter, defaultdict
 from collections.abc import Callable, Sequence
 from dataclasses import dataclass
+import hashlib
 import math
 import re
+import sqlite3
 
 from pydantic import BaseModel
 
@@ -57,6 +59,7 @@ MIN_RETRIEVAL_SCORE = 2
 DEFAULT_TOP_K = 5
 DEFAULT_ADJACENT_HOPS = 1
 DEFAULT_SCORING = "hybrid"
+DEFAULT_VECTOR_DIMENSIONS = 384
 DEFAULT_LEXICAL_RECALL_TOP_N = 200
 DEFAULT_DENSE_RECALL_TOP_N = 200
 DEFAULT_RERANK_CANDIDATE_POOL = 300
@@ -162,6 +165,7 @@ class SupportDecision:
 
 DenseScorer = Callable[[str, Sequence[StoryChunk]], Sequence[float]]
 CrossEncoderReranker = Callable[[str, Sequence[StoryChunk]], Sequence[float]]
+EmbeddingModel = Callable[[Sequence[str]], Sequence[Sequence[float]]]
 
 
 def tokenize_terms(text: str) -> list[str]:
@@ -195,6 +199,143 @@ def expand_semantic_terms(terms: set[str]) -> set[str]:
     return expanded
 
 
+class HashingTextEmbedder:
+    """Deterministic local text embeddings for reproducible vector tests."""
+
+    def __init__(self, dimensions: int = DEFAULT_VECTOR_DIMENSIONS) -> None:
+        if dimensions <= 0:
+            raise ValueError("dimensions must be positive")
+        self.dimensions = dimensions
+
+    def __call__(self, texts: Sequence[str]) -> list[list[float]]:
+        return [self.embed(text) for text in texts]
+
+    def embed(self, text: str) -> list[float]:
+        terms = tokenize_terms(text)
+        expanded_terms = expand_semantic_terms(set(terms))
+        vector = [0.0] * self.dimensions
+        for term in terms:
+            self._add_term(vector, term, weight=1.0)
+            stemmed = stem_term(term)
+            if stemmed != term:
+                self._add_term(vector, stemmed, weight=0.7)
+        for term in expanded_terms - set(terms):
+            self._add_term(vector, term, weight=0.45)
+        return self._normalize(vector)
+
+    def _add_term(self, vector: list[float], term: str, *, weight: float) -> None:
+        digest = hashlib.blake2b(term.encode("utf-8"), digest_size=8).digest()
+        bucket = int.from_bytes(digest, "big") % self.dimensions
+        vector[bucket] += weight
+
+    def _normalize(self, vector: list[float]) -> list[float]:
+        norm = math.sqrt(sum(value * value for value in vector))
+        if norm == 0:
+            return vector
+        return [value / norm for value in vector]
+
+
+class _InMemoryVectorBackend:
+    name = "memory"
+
+    def __init__(self, vectors: Sequence[Sequence[float]]) -> None:
+        self._vectors = [list(vector) for vector in vectors]
+
+    def rank(self, query_vector: Sequence[float], *, limit: int) -> list[tuple[int, float]]:
+        scored = [
+            (position, self._dot(query_vector, vector))
+            for position, vector in enumerate(self._vectors)
+        ]
+        return sorted(scored, key=lambda item: (-item[1], item[0]))[:limit]
+
+    def _dot(self, left: Sequence[float], right: Sequence[float]) -> float:
+        return sum(a * b for a, b in zip(left, right, strict=True))
+
+
+class _SqliteVecVectorBackend:
+    name = "sqlite-vec"
+
+    def __init__(self, vectors: Sequence[Sequence[float]]) -> None:
+        import sqlite_vec
+
+        self._sqlite_vec = sqlite_vec
+        self._connection = sqlite3.connect(":memory:")
+        sqlite_vec.load(self._connection)
+        self._dimensions = len(vectors[0]) if vectors else DEFAULT_VECTOR_DIMENSIONS
+        self._connection.execute(
+            f"CREATE VIRTUAL TABLE story_vectors USING vec0(embedding float[{self._dimensions}])"
+        )
+        self._connection.executemany(
+            "INSERT INTO story_vectors(rowid, embedding) VALUES (?, ?)",
+            [
+                (position + 1, sqlite_vec.serialize_float32(vector))
+                for position, vector in enumerate(vectors)
+            ],
+        )
+
+    def rank(self, query_vector: Sequence[float], *, limit: int) -> list[tuple[int, float]]:
+        rows = self._connection.execute(
+            """
+            SELECT rowid, distance
+            FROM story_vectors
+            WHERE embedding MATCH ?
+            ORDER BY distance
+            LIMIT ?
+            """,
+            (self._sqlite_vec.serialize_float32(query_vector), limit),
+        ).fetchall()
+        return [
+            (int(rowid) - 1, 1.0 / (1.0 + float(distance)))
+            for rowid, distance in rows
+        ]
+
+
+class StoryVectorScorer:
+    """Dense scorer backed by sqlite-vec when available, with exact in-memory fallback."""
+
+    def __init__(
+        self,
+        chunks: Sequence[StoryChunk],
+        *,
+        embedder: EmbeddingModel | None = None,
+        backend: str = "auto",
+    ) -> None:
+        self._chunks = list(chunks)
+        self._embedder = embedder or HashingTextEmbedder()
+        self._vectors = [
+            list(vector)
+            for vector in self._embedder([chunk.text for chunk in self._chunks])
+        ]
+        if backend not in {"auto", "sqlite-vec", "memory"}:
+            raise ValueError("backend must be 'auto', 'sqlite-vec', or 'memory'")
+        self._backend = self._create_backend(backend)
+
+    @property
+    def backend_name(self) -> str:
+        return self._backend.name
+
+    def __call__(
+        self, question: str, chunks: Sequence[StoryChunk]
+    ) -> list[float]:
+        if len(chunks) != len(self._chunks):
+            raise ValueError("vector scorer chunk count changed after indexing")
+        query_vector = list(self._embedder([question])[0])
+        ranked = self._backend.rank(query_vector, limit=len(self._chunks))
+        scores = [0.0] * len(self._chunks)
+        for position, score in ranked:
+            scores[position] = float(score)
+        return scores
+
+    def _create_backend(self, backend: str) -> _SqliteVecVectorBackend | _InMemoryVectorBackend:
+        if backend in {"auto", "sqlite-vec"}:
+            try:
+                return _SqliteVecVectorBackend(self._vectors)
+            except (ImportError, sqlite3.Error):
+                if backend == "sqlite-vec":
+                    raise
+        return _InMemoryVectorBackend(self._vectors)
+
+
 class StoryRagIndex:
     def __init__(
         self,
@@ -202,6 +343,8 @@ class StoryRagIndex:
         *,
         dense_scorer: DenseScorer | None = None,
         cross_encoder_reranker: CrossEncoderReranker | None = None,
+        vector_backend: str = "auto",
+        embedding_model: EmbeddingModel | None = None,
     ) -> None:
         self.chunks = chunks
         self._dense_scorer = dense_scorer
@@ -224,6 +367,21 @@ class StoryRagIndex:
             if self._chunk_terms
             else 0.0
         )
+        self._vector_scorer = (
+            StoryVectorScorer(
+                chunks,
+                embedder=embedding_model,
+                backend=vector_backend,
+            )
+            if dense_scorer is None
+            else None
+        )
+
+    @property
+    def vector_backend_name(self) -> str | None:
+        if self._vector_scorer is None:
+            return None
+        return self._vector_scorer.backend_name
 
     def query_terms(self, question: str) -> set[str]:
         return tokenize(question) - self.title_terms
@@ -331,15 +489,21 @@ class StoryRagIndex:
 
     def _dense_rank(self, question: str) -> list[RankedStoryChunk]:
         chunks: Sequence[StoryChunk] = self.chunks
-        if self._dense_scorer is None:
+        if self._dense_scorer is not None:
+            scores = list(self._dense_scorer(question, chunks))
+            if len(scores) != len(self.chunks):
+                raise ValueError("dense_scorer must return one score per story chunk")
+        elif self._vector_scorer is not None:
+            vector_scores = list(self._vector_scorer(question, chunks))
+            scores = [
+                vector_score + self._lightweight_dense_score(question, position)
+                for position, vector_score in enumerate(vector_scores)
+            ]
+        else:
             scores = [
                 self._lightweight_dense_score(question, position)
                 for position in range(len(self.chunks))
             ]
-        else:
-            scores = list(self._dense_scorer(question, chunks))
-            if len(scores) != len(self.chunks):
-                raise ValueError("dense_scorer must return one score per story chunk")
 
         ranked = [
             RankedStoryChunk(

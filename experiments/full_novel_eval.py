@@ -529,7 +529,9 @@ def build_report(corpus_path: Path, target_words: int) -> dict[str, Any]:
         },
         "retrieval_system": {
             "class": "socartes_backend.story_rag.StoryRagIndex",
-            "retrieval": "hybrid RRF recall with reranking and adjacent chunk expansion",
+            "retrieval": "hybrid RRF recall with BM25 plus vector recall, reranking, and adjacent chunk expansion",
+            "vector_backend": full_index.vector_backend_name,
+            "vector_backend_note": "auto uses sqlite-vec when installed and deterministic in-memory cosine search otherwise",
             "scoring": DEFAULT_SCORING,
             "top_k": DEFAULT_TOP_K,
             "adjacent_hops": DEFAULT_ADJACENT_HOPS,
