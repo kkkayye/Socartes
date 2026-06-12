@@ -2,9 +2,13 @@ from collections import Counter, defaultdict
 from collections.abc import Callable, Sequence
 from dataclasses import dataclass
 import hashlib
+import json
 import math
+import os
+from pathlib import Path
 import re
 import sqlite3
+from urllib import error, request
 
 from pydantic import BaseModel
 
@@ -60,6 +64,8 @@ DEFAULT_TOP_K = 5
 DEFAULT_ADJACENT_HOPS = 1
 DEFAULT_SCORING = "hybrid"
 DEFAULT_VECTOR_DIMENSIONS = 384
+DEFAULT_LOCAL_EMBEDDING_MODEL_NAME = "all-MiniLM-L6-v2"
+DEFAULT_OPENAI_EMBEDDING_MODEL = "text-embedding-3-large"
 DEFAULT_LEXICAL_RECALL_TOP_N = 200
 DEFAULT_DENSE_RECALL_TOP_N = 200
 DEFAULT_RERANK_CANDIDATE_POOL = 300
@@ -235,6 +241,208 @@ class HashingTextEmbedder:
         return [value / norm for value in vector]
 
 
+class OpenAIEmbeddingModel:
+    """OpenAI-compatible embeddings client using text-embedding-3-large by default."""
+
+    def __init__(
+        self,
+        *,
+        api_key: str | None = None,
+        base_url: str | None = None,
+        model: str | None = None,
+        batch_size: int = 96,
+        timeout: float = 60.0,
+    ) -> None:
+        self.api_key = api_key or os.environ.get("SOCARTES_EMBEDDING_API_KEY") or os.environ.get(
+            "OPENAI_API_KEY"
+        )
+        if not self.api_key:
+            raise RuntimeError("OPENAI_API_KEY is required for OpenAI embeddings")
+        self.base_url = (
+            base_url
+            or os.environ.get("SOCARTES_EMBEDDING_BASE_URL")
+            or os.environ.get("OPENAI_BASE_URL")
+            or "https://api.openai.com/v1"
+        ).rstrip("/")
+        self.model_name = model or os.environ.get(
+            "SOCARTES_EMBEDDING_MODEL", DEFAULT_OPENAI_EMBEDDING_MODEL
+        )
+        self.batch_size = batch_size
+        self.timeout = timeout
+
+    def __call__(self, texts: Sequence[str]) -> list[list[float]]:
+        vectors: list[list[float]] = []
+        for start in range(0, len(texts), self.batch_size):
+            batch = [text or "" for text in texts[start : start + self.batch_size]]
+            if not batch:
+                continue
+            vectors.extend(self._embed_batch(batch))
+        return vectors
+
+    def _embed_batch(self, texts: list[str]) -> list[list[float]]:
+        body = json.dumps({"model": self.model_name, "input": texts}).encode("utf-8")
+        req = request.Request(
+            f"{self.base_url}/embeddings",
+            data=body,
+            method="POST",
+            headers={
+                "Authorization": f"Bearer {self.api_key}",
+                "Content-Type": "application/json",
+            },
+        )
+        try:
+            with request.urlopen(req, timeout=self.timeout) as response:
+                payload = json.loads(response.read().decode("utf-8"))
+        except (error.HTTPError, error.URLError, TimeoutError) as exc:
+            raise RuntimeError("OpenAI embedding request failed") from exc
+        data = payload.get("data")
+        if not isinstance(data, list):
+            raise RuntimeError("OpenAI embedding response did not contain data")
+        ordered = sorted(data, key=lambda item: item.get("index", 0))
+        return [self._normalize([float(value) for value in item["embedding"]]) for item in ordered]
+
+    def _normalize(self, vector: list[float]) -> list[float]:
+        norm = math.sqrt(sum(value * value for value in vector))
+        if norm == 0:
+            return vector
+        return [value / norm for value in vector]
+
+
+class LocalOnnxMiniLmEmbedder:
+    """Local all-MiniLM-L6-v2 ONNX embedder loaded from machine cache."""
+
+    model_name = DEFAULT_LOCAL_EMBEDDING_MODEL_NAME
+
+    def __init__(self, model_path: str | Path | None = None, max_length: int = 256) -> None:
+        try:
+            import numpy as np
+            import onnxruntime as ort
+            from tokenizers import Tokenizer
+        except ImportError as exc:
+            raise RuntimeError("onnxruntime and tokenizers are required") from exc
+
+        resolved = self._resolve_model_files(model_path)
+        if resolved is None:
+            raise RuntimeError("local all-MiniLM-L6-v2 ONNX model was not found")
+        model_file, tokenizer_file = resolved
+
+        self._np = np
+        self._session = ort.InferenceSession(
+            str(model_file),
+            providers=["CPUExecutionProvider"],
+        )
+        self._tokenizer = Tokenizer.from_file(str(tokenizer_file))
+        self._tokenizer.enable_truncation(max_length=max_length)
+        self._max_length = max_length
+        self.dimensions = DEFAULT_VECTOR_DIMENSIONS
+
+    def __call__(self, texts: Sequence[str]) -> list[list[float]]:
+        if not texts:
+            return []
+        encodings = [self._tokenizer.encode(text or "") for text in texts]
+        max_length = min(
+            self._max_length,
+            max((len(encoding.ids) for encoding in encodings), default=1),
+        )
+        if max_length <= 0:
+            max_length = 1
+
+        def pad(values: list[int], fill: int) -> list[int]:
+            clipped = values[:max_length]
+            return clipped + [fill] * (max_length - len(clipped))
+
+        model_inputs = {}
+        for model_input in self._session.get_inputs():
+            if model_input.name == "input_ids":
+                model_inputs[model_input.name] = self._np.array(
+                    [pad(encoding.ids, 0) for encoding in encodings],
+                    dtype=self._np.int64,
+                )
+            elif model_input.name == "attention_mask":
+                model_inputs[model_input.name] = self._np.array(
+                    [pad(encoding.attention_mask, 0) for encoding in encodings],
+                    dtype=self._np.int64,
+                )
+            elif model_input.name == "token_type_ids":
+                model_inputs[model_input.name] = self._np.array(
+                    [pad(encoding.type_ids, 0) for encoding in encodings],
+                    dtype=self._np.int64,
+                )
+
+        token_embeddings = self._session.run(None, model_inputs)[0]
+        attention_mask = model_inputs["attention_mask"].astype(self._np.float32)[..., None]
+        pooled = (token_embeddings * attention_mask).sum(axis=1) / self._np.clip(
+            attention_mask.sum(axis=1),
+            1e-9,
+            None,
+        )
+        pooled = pooled / self._np.clip(
+            self._np.linalg.norm(pooled, axis=1, keepdims=True),
+            1e-9,
+            None,
+        )
+        return pooled.astype(self._np.float32).tolist()
+
+    def _resolve_model_files(
+        self, model_path: str | Path | None
+    ) -> tuple[Path, Path] | None:
+        candidates: list[Path] = []
+        if model_path is not None:
+            candidates.append(Path(model_path).expanduser())
+        env_path = os.environ.get("SOCARTES_EMBEDDING_MODEL_PATH")
+        if env_path:
+            candidates.append(Path(env_path).expanduser())
+        candidates.extend(
+            [
+                Path.home() / ".cache/chroma/onnx_models/all-MiniLM-L6-v2/onnx",
+                Path.home() / ".supermemory/models/Xenova/all-MiniLM-L6-v2",
+            ]
+        )
+
+        for candidate in candidates:
+            possible_pairs = [
+                (candidate / "model.onnx", candidate / "tokenizer.json"),
+                (candidate / "onnx/model.onnx", candidate / "onnx/tokenizer.json"),
+                (candidate / "onnx/model_quantized.onnx", candidate / "tokenizer.json"),
+            ]
+            for model_file, tokenizer_file in possible_pairs:
+                if model_file.exists() and tokenizer_file.exists():
+                    return model_file, tokenizer_file
+        return None
+
+
+def default_embedding_model_candidates() -> list[EmbeddingModel]:
+    provider = os.environ.get("SOCARTES_EMBEDDING_PROVIDER", "auto").lower()
+    if provider not in {"auto", "openai", "local", "hash"}:
+        raise ValueError("SOCARTES_EMBEDDING_PROVIDER must be auto, openai, local, or hash")
+    candidates: list[EmbeddingModel] = []
+    if provider in {"auto", "openai"}:
+        try:
+            candidates.append(OpenAIEmbeddingModel())
+        except RuntimeError:
+            if provider == "openai":
+                raise
+    if provider in {"auto", "local"}:
+        try:
+            candidates.append(LocalOnnxMiniLmEmbedder())
+        except RuntimeError:
+            if provider == "local":
+                raise
+    if provider in {"auto", "hash"}:
+        candidates.append(HashingTextEmbedder())
+    if not candidates:
+        raise RuntimeError("embedding provider could not be initialized")
+    return candidates
+
+
+def default_embedding_model() -> EmbeddingModel:
+    return default_embedding_model_candidates()[0]
+
+
+def embedding_model_name(embedder: EmbeddingModel) -> str:
+    return getattr(embedder, "model_name", embedder.__class__.__name__)
+
+
 class _InMemoryVectorBackend:
     name = "memory"
 
@@ -292,7 +500,6 @@ class _SqliteVecVectorBackend:
 
 class StoryVectorScorer:
     """Dense scorer backed by sqlite-vec when available, with exact in-memory fallback."""
-
     def __init__(
         self,
         chunks: Sequence[StoryChunk],
@@ -301,19 +508,16 @@ class StoryVectorScorer:
         backend: str = "auto",
     ) -> None:
         self._chunks = list(chunks)
-        self._embedder = embedder or HashingTextEmbedder()
-        self._vectors = [
-            list(vector)
-            for vector in self._embedder([chunk.text for chunk in self._chunks])
-        ]
+        self._embedder, self._vectors = self._build_embeddings(embedder)
         if backend not in {"auto", "sqlite-vec", "memory"}:
             raise ValueError("backend must be 'auto', 'sqlite-vec', or 'memory'")
         self._backend = self._create_backend(backend)
-
     @property
     def backend_name(self) -> str:
         return self._backend.name
-
+    @property
+    def embedder(self) -> EmbeddingModel:
+        return self._embedder
     def __call__(
         self, question: str, chunks: Sequence[StoryChunk]
     ) -> list[float]:
@@ -325,7 +529,22 @@ class StoryVectorScorer:
         for position, score in ranked:
             scores[position] = float(score)
         return scores
+    def _build_embeddings(
+        self, embedder: EmbeddingModel | None
+    ) -> tuple[EmbeddingModel, list[list[float]]]:
+        chunk_texts = [chunk.text for chunk in self._chunks]
+        if embedder is not None:
+            return embedder, [list(vector) for vector in embedder(chunk_texts)]
 
+        last_error: RuntimeError | None = None
+        for candidate in default_embedding_model_candidates():
+            try:
+                return candidate, [list(vector) for vector in candidate(chunk_texts)]
+            except RuntimeError as exc:
+                last_error = exc
+        if last_error is not None:
+            raise last_error
+        raise RuntimeError("embedding provider could not produce vectors")
     def _create_backend(self, backend: str) -> _SqliteVecVectorBackend | _InMemoryVectorBackend:
         if backend in {"auto", "sqlite-vec"}:
             try:
@@ -382,6 +601,12 @@ class StoryRagIndex:
         if self._vector_scorer is None:
             return None
         return self._vector_scorer.backend_name
+
+    @property
+    def embedding_model(self) -> EmbeddingModel | None:
+        if self._vector_scorer is None:
+            return None
+        return self._vector_scorer.embedder
 
     def query_terms(self, question: str) -> set[str]:
         return tokenize(question) - self.title_terms

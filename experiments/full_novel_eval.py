@@ -317,6 +317,10 @@ def build_full_novel_index(body: str, target_words: int) -> StoryRagIndex:
     return StoryRagIndex(chunks)
 
 
+def stable_score(score: float) -> float:
+    return round(score, 6)
+
+
 def first_evidence_rank(
     index: StoryRagIndex, question: str, expected_phrase: str | None
 ) -> dict[str, Any] | None:
@@ -327,7 +331,7 @@ def first_evidence_rank(
             return {
                 "rank": rank,
                 "source_id": candidate.chunk.source_id,
-                "score": candidate.score,
+                "score": stable_score(candidate.score),
                 "preview": candidate.chunk.text[:220],
             }
     return None
@@ -356,7 +360,7 @@ def retrieval_diagnostics(
             {
                 "rank": rank,
                 "source_id": candidate.chunk.source_id,
-                "score": candidate.score,
+                "score": stable_score(candidate.score),
                 "preview": candidate.chunk.text[:180],
             }
             for rank, candidate in enumerate(ranked, start=1)
@@ -530,7 +534,11 @@ def build_report(corpus_path: Path, target_words: int) -> dict[str, Any]:
         "retrieval_system": {
             "class": "socartes_backend.story_rag.StoryRagIndex",
             "retrieval": "hybrid RRF recall with BM25 plus vector recall, reranking, and adjacent chunk expansion",
+            "embedding_provider": story_rag.embedding_model_name(
+                full_index.embedding_model
+            ),
             "vector_backend": full_index.vector_backend_name,
+            "embedding_note": "auto uses text-embedding-3-large with OPENAI_API_KEY, then cached local all-MiniLM-L6-v2 ONNX, then hashed fallback",
             "vector_backend_note": "auto uses sqlite-vec when installed and deterministic in-memory cosine search otherwise",
             "scoring": DEFAULT_SCORING,
             "top_k": DEFAULT_TOP_K,

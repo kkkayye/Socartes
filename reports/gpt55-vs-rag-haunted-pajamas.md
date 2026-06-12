@@ -4,7 +4,7 @@
 
 This report evaluates whether Socartes can answer obscure fiction questions from a supplied local corpus while refusing unsupported questions. The main Socartes condition uses the full Project Gutenberg text of *The Haunted Pajamas* automatically split into 1047 chunks.
 
-The repaired full-novel retriever uses hybrid recall with Reciprocal Rank Fusion (BM25 top 200 plus real vector recall top 200), a 300-candidate rerank pool, cross-encoder-style reranking, `top_k=5`, `adjacent_hops=1`, title-term removal, and a direct-support refusal gate. The vector path uses `sqlite-vec` when installed and falls back to deterministic in-memory cosine search for reproduction. It answers the original 10 of 10 source-supported questions and 30 of 30 extension questions, for 40 of 40 answerable questions overall, while correctly refusing 2 of 2 unsupported controls.
+The repaired full-novel retriever uses hybrid recall with Reciprocal Rank Fusion (BM25 top 200 plus vector recall top 200), a 300-candidate rerank pool, heuristic support-aware reranking, `top_k=5`, `adjacent_hops=1`, title-term removal, and a direct-support refusal gate. The default embedding path uses OpenAI `text-embedding-3-large` when `OPENAI_API_KEY` is available, can fall back to a cached local `all-MiniLM-L6-v2` ONNX model, and finally falls back to a deterministic hashed baseline for dependency-free reproduction. The vector store uses `sqlite-vec` when installed and otherwise uses in-memory cosine search. It answers the original 10 of 10 source-supported questions and 30 of 30 extension questions, for 40 of 40 answerable questions overall, while correctly refusing 2 of 2 unsupported controls.
 
 ![RAG full-novel chart](gpt55-vs-rag-haunted-pajamas.svg)
 
@@ -119,13 +119,13 @@ Within the original Q1-Q10 set, the failed answerable questions in the legacy to
 Q12 fails in the no-support-gate ablation for a different reason. The novel contains a real `Captain` name, Captain Clutchem, in an unrelated police context. The question asks for a spaceship captain, but token overlap sees `captain` and `name`, reaches the refusal threshold, and returns a false hit. The repaired support gate requires the target terms from `name of the spaceship captain` to appear in the retrieved evidence, so it refuses because `spaceship` is absent.
 ## Extended-Question Error Analysis
 Before the hybrid repair, Q16, Q17, Q19, Q21, and Q22 failed even though each expected answer existed in the automatic full-novel index. Their first matching evidence was outside the final evidence window: Q16 and Q17 first appeared at rank 7, Q21 at rank 16, Q22 at rank 10, and Q19 at rank 62.
-The later Q23-Q32 extension exposed the next limit of pure lexical recall. Q23 first appeared at lexical rank 287, Q27 at rank 542, and Q29 at rank 67. Q24 appeared at rank 29 but required the reranker to prefer the exact "Miss Billings" correction passage over generic Frances/Lightnut context. Hybrid RRF recall brings vector candidates into the candidate pool, and cross-encoder-style reranking selects the passage that directly answers the question. The added Q33-Q42 diagnostic stays correct under the same pipeline.
+The later Q23-Q32 extension exposed the next limit of pure lexical recall. Q23 first appeared at lexical rank 287, Q27 at rank 542, and Q29 at rank 67. Q24 appeared at rank 29 but required the reranker to prefer the exact "Miss Billings" correction passage over generic Frances/Lightnut context. Hybrid RRF recall brings vector candidates into the candidate pool, and heuristic support-aware reranking selects the passage that directly answers the question. The added Q33-Q42 diagnostic stays correct under the same pipeline.
 
 ## Interpretation
 
 This experiment shows that Socartes can provide verifiable chunk IDs and correct refusal behavior on a full corpus when retrieval combines lexical recall, vector recall, reranking, adjacent evidence aggregation, and a direct-support gate.
 
-The main claim should stay scoped to this implementation and corpus: Socartes can ground 40 of 40 answerable diagnostic questions in a local full-novel index and refuse the two unsupported controls. Broader robustness still requires follow-up work such as larger multi-corpus tests, production embedding backends, learned cross-encoder reranking, and stronger semantic support checking.
+The main claim should stay scoped to this implementation and corpus: Socartes can ground 40 of 40 answerable diagnostic questions in a local full-novel index and refuse the two unsupported controls. Broader robustness still requires follow-up work such as larger multi-corpus tests, learned cross-encoder reranking, and stronger semantic support checking.
 
 ## Reproducibility
 

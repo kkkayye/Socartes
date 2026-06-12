@@ -1,12 +1,16 @@
 import sys
+import os
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
+os.environ.setdefault("SOCARTES_EMBEDDING_PROVIDER", "hash")
+
 from socartes_backend.story_rag import (
     HAUNTED_PAJAMAS_INDEX,
+    OpenAIEmbeddingModel,
     PROJECT_GUTENBERG_HAUNTED_PAJAMAS_URL,
     StoryChunk,
     StoryRagIndex,
@@ -93,6 +97,41 @@ def test_story_rag_uses_vector_backend_for_dense_recall():
     assert index.vector_backend_name == "memory"
     assert lexical_top.chunk.source_id == "lexical-decoy"
     assert dense_top.chunk.source_id == "semantic-answer"
+
+
+def test_openai_embedding_model_uses_text_embedding_3_large(monkeypatch):
+    captured_request = {}
+
+    class FakeResponse:
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *_args):
+            return None
+
+        def read(self):
+            return (
+                b'{"data":[{"index":0,"embedding":[3.0,4.0]},'
+                b'{"index":1,"embedding":[0.0,5.0]}]}'
+            )
+
+    def fake_urlopen(req, timeout):
+        captured_request["url"] = req.full_url
+        captured_request["body"] = req.data.decode("utf-8")
+        captured_request["timeout"] = timeout
+        return FakeResponse()
+
+    monkeypatch.setattr("socartes_backend.story_rag.request.urlopen", fake_urlopen)
+    monkeypatch.setenv("OPENAI_API_KEY", "sk-test")
+
+    model = OpenAIEmbeddingModel(base_url="https://embeddings.example.test/v1")
+    vectors = model(["first", "second"])
+
+    assert model.model_name == "text-embedding-3-large"
+    assert captured_request["url"] == "https://embeddings.example.test/v1/embeddings"
+    assert '"model": "text-embedding-3-large"' in captured_request["body"]
+    assert captured_request["timeout"] == 60.0
+    assert vectors == [[0.6, 0.8], [0.0, 1.0]]
 
 
 def test_story_rag_answers_obscure_plot_questions_from_database_chunks():

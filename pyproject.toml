@@ -19,6 +19,8 @@ dev = [
 ]
 vector = [
   "sqlite-vec>=0.1.6",
+  "onnxruntime>=1.17",
+  "tokenizers>=0.15",
 ]
 
 [tool.setuptools.packages.find]

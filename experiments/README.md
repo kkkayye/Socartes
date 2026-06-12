@@ -7,7 +7,8 @@ This experiment evaluates `StoryRagIndex` against a full-novel automatic index a
 - Main experiment: build a deterministic automatic index from the full Project Gutenberg text of *The Haunted Pajamas*.
 - Questions: evaluate 42 diagnostic questions: Q1-Q10 original answerable questions, Q13-Q42 extension answerable questions, and Q11-Q12 unsupported controls.
 - Retriever: hybrid RRF recall with BM25 plus real vector recall, reranking, `top_k=5`, `adjacent_hops=1`, title-term guard, `MIN_RETRIEVAL_SCORE=2`, and a direct-support refusal gate.
-- Vector layer: `StoryVectorScorer` uses `sqlite-vec` when the optional `vector` extra is installed, and falls back to deterministic in-memory cosine search for dependency-free reproduction.
+- Embedding layer: `StoryVectorScorer` uses `text-embedding-3-large` when `OPENAI_API_KEY` is available. It can fall back to a cached local `all-MiniLM-L6-v2` ONNX model, then to the deterministic hashed baseline for dependency-free reproduction.
+- Vector store: `sqlite-vec` is used when the optional `vector` extra is installed; otherwise the same vectors are searched with deterministic in-memory cosine search.
 
 ## Reproduce
 
