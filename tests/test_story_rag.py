@@ -127,9 +127,9 @@ def test_openai_embedding_model_uses_text_embedding_3_large(monkeypatch):
     model = OpenAIEmbeddingModel(base_url="https://embeddings.example.test/v1")
     vectors = model(["first", "second"])
 
-    assert model.model_name == "text-embedding-3-large"
+    assert model.model_name == "qwen3-embedding-0.6b"
     assert captured_request["url"] == "https://embeddings.example.test/v1/embeddings"
-    assert '"model": "text-embedding-3-large"' in captured_request["body"]
+    assert '"model": "qwen3-embedding-0.6b"' in captured_request["body"]
     assert captured_request["timeout"] == 60.0
     assert vectors == [[0.6, 0.8], [0.0, 1.0]]
 

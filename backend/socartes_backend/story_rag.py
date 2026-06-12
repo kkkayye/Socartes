@@ -65,7 +65,7 @@ DEFAULT_ADJACENT_HOPS = 1
 DEFAULT_SCORING = "hybrid"
 DEFAULT_VECTOR_DIMENSIONS = 384
 DEFAULT_LOCAL_EMBEDDING_MODEL_NAME = "all-MiniLM-L6-v2"
-DEFAULT_OPENAI_EMBEDDING_MODEL = "text-embedding-3-large"
+DEFAULT_OPENAI_EMBEDDING_MODEL = "qwen3-embedding-0.6b"
 DEFAULT_LEXICAL_RECALL_TOP_N = 200
 DEFAULT_DENSE_RECALL_TOP_N = 200
 DEFAULT_RERANK_CANDIDATE_POOL = 300
@@ -242,7 +242,7 @@ class HashingTextEmbedder:
 
 
 class OpenAIEmbeddingModel:
-    """OpenAI-compatible embeddings client using text-embedding-3-large by default."""
+    """OpenAI-compatible embeddings client using Qwen3-Embedding-0.6B by default."""
 
     def __init__(
         self,

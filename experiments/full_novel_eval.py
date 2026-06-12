@@ -538,7 +538,7 @@ def build_report(corpus_path: Path, target_words: int) -> dict[str, Any]:
                 full_index.embedding_model
             ),
             "vector_backend": full_index.vector_backend_name,
-            "embedding_note": "auto uses text-embedding-3-large with OPENAI_API_KEY, then cached local all-MiniLM-L6-v2 ONNX, then hashed fallback",
+            "embedding_note": "auto uses qwen3-embedding-0.6b through an OpenAI-compatible /embeddings endpoint, then cached local all-MiniLM-L6-v2 ONNX, then hashed fallback",
             "vector_backend_note": "auto uses sqlite-vec when installed and deterministic in-memory cosine search otherwise",
             "scoring": DEFAULT_SCORING,
             "top_k": DEFAULT_TOP_K,

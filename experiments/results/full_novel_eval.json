@@ -15,7 +15,7 @@
     "retrieval": "hybrid RRF recall with BM25 plus vector recall, reranking, and adjacent chunk expansion",
     "embedding_provider": "HashingTextEmbedder",
     "vector_backend": "memory",
-    "embedding_note": "auto uses text-embedding-3-large with OPENAI_API_KEY, then cached local all-MiniLM-L6-v2 ONNX, then hashed fallback",
+    "embedding_note": "auto uses qwen3-embedding-0.6b through an OpenAI-compatible /embeddings endpoint, then cached local all-MiniLM-L6-v2 ONNX, then hashed fallback",
     "vector_backend_note": "auto uses sqlite-vec when installed and deterministic in-memory cosine search otherwise",
     "scoring": "hybrid",
     "top_k": 5,
