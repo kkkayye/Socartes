@@ -1,0 +1,127 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1040" viewBox="0 0 1600 1040" role="img" aria-labelledby="title desc">
+  <title id="title">RAG repair path and question outcomes</title>
+  <desc id="desc">A flowchart-style diagnostic figure showing how Socartes moves from legacy top-1 retrieval to hybrid retrieval, reranking, support gating, and a final 39 of 40 answerable result with 2 of 2 refusals.</desc>
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto">
+      <polygon points="0 0, 10 4, 0 8" fill="#4f5d75"/>
+    </marker>
+    <marker id="arrow-accent" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto">
+      <polygon points="0 0, 10 4, 0 8" fill="#eb6c36"/>
+    </marker>
+    <style>
+      .serif { font-family: 'Instrument Serif', Georgia, serif; }
+      .sans { font-family: 'Geist', Arial, sans-serif; }
+      .mono { font-family: 'Geist Mono', 'DejaVu Sans Mono', monospace; }
+      .title { font-size: 46px; font-weight: 400; fill: #2d3142; }
+      .subtitle { font-size: 20px; fill: #4f5d75; }
+      .tag { font-size: 12px; font-weight: 600; letter-spacing: 0.18em; fill: #4f5d75; }
+      .name { font-size: 25px; font-weight: 600; fill: #2d3142; }
+      .sub { font-size: 17px; fill: #4f5d75; }
+      .metric { font-size: 28px; font-weight: 600; fill: #2d3142; }
+      .metric-accent { font-size: 30px; font-weight: 600; fill: #eb6c36; }
+      .arrow-label { font-size: 13px; letter-spacing: 0.08em; fill: #4f5d75; }
+      .legend { font-size: 15px; fill: #4f5d75; }
+    </style>
+  </defs>
+
+  <rect width="1600" height="1040" fill="#f5f5f5"/>
+
+  <text x="72" y="88" class="serif title">RAG Repair Path and Question Outcomes</text>
+  <text x="72" y="128" class="sans subtitle">Figure 4 summarizes the 42-question full-novel diagnostic and the repair ablation for Socartes StoryRagIndex.</text>
+
+  <line x1="328" y1="332" x2="448" y2="332" stroke="#4f5d75" stroke-width="3" marker-end="url(#arrow)"/>
+  <rect x="358" y="304" width="64" height="24" rx="2" fill="#f5f5f5"/>
+  <text x="390" y="320" text-anchor="middle" class="mono arrow-label">TOP-1</text>
+
+  <line x1="704" y1="332" x2="824" y2="332" stroke="#4f5d75" stroke-width="3" marker-end="url(#arrow)"/>
+  <rect x="728" y="304" width="72" height="24" rx="2" fill="#f5f5f5"/>
+  <text x="764" y="320" text-anchor="middle" class="mono arrow-label">HYBRID</text>
+
+  <line x1="1080" y1="332" x2="1168" y2="332" stroke="#4f5d75" stroke-width="3" marker-end="url(#arrow)"/>
+  <rect x="1100" y="304" width="52" height="24" rx="2" fill="#f5f5f5"/>
+  <text x="1126" y="320" text-anchor="middle" class="mono arrow-label">GATE</text>
+
+  <line x1="1320" y1="412" x2="1320" y2="552" stroke="#eb6c36" stroke-width="3" marker-end="url(#arrow-accent)"/>
+  <rect x="1292" y="468" width="56" height="24" rx="2" fill="#f5f5f5"/>
+  <text x="1320" y="484" text-anchor="middle" class="mono arrow-label" fill="#eb6c36">FINAL</text>
+
+  <g transform="translate(72 232)">
+    <rect x="0" y="0" width="256" height="200" rx="20" fill="#f5f5f5"/>
+    <rect x="0" y="0" width="256" height="200" rx="20" fill="#e8eaee" stroke="#9aa3b2" stroke-width="2"/>
+    <rect x="18" y="18" width="54" height="24" rx="2" fill="transparent" stroke="#9aa3b2" stroke-width="1.2"/>
+    <text x="45" y="34" text-anchor="middle" class="mono tag">DATA</text>
+    <text x="128" y="86" text-anchor="middle" class="sans name">Full-Novel Index</text>
+    <text x="128" y="120" text-anchor="middle" class="sans sub">1,047 automatic chunks</text>
+    <text x="128" y="150" text-anchor="middle" class="sans sub">The Haunted Pajamas</text>
+  </g>
+
+  <g transform="translate(448 232)">
+    <rect x="0" y="0" width="256" height="200" rx="6" fill="#f5f5f5"/>
+    <rect x="0" y="0" width="256" height="200" rx="6" fill="#ffffff" stroke="#2d3142" stroke-width="2"/>
+    <rect x="18" y="18" width="58" height="24" rx="2" fill="transparent" stroke="#4f5d75" stroke-width="1.2"/>
+    <text x="47" y="34" text-anchor="middle" class="mono tag">BASE</text>
+    <text x="128" y="82" text-anchor="middle" class="sans name">Legacy Top-1</text>
+    <text x="128" y="116" text-anchor="middle" class="sans sub">single lexical chunk</text>
+    <text x="128" y="152" text-anchor="middle" class="sans metric">22/40 answerable</text>
+    <text x="128" y="182" text-anchor="middle" class="sans metric">1/2 refusals</text>
+  </g>
+
+  <g transform="translate(824 232)">
+    <rect x="0" y="0" width="256" height="200" rx="6" fill="#f5f5f5"/>
+    <rect x="0" y="0" width="256" height="200" rx="6" fill="#ffffff" stroke="#2d3142" stroke-width="2"/>
+    <rect x="18" y="18" width="50" height="24" rx="2" fill="transparent" stroke="#4f5d75" stroke-width="1.2"/>
+    <text x="43" y="34" text-anchor="middle" class="mono tag">RET</text>
+    <text x="128" y="82" text-anchor="middle" class="sans name">Hybrid RRF</text>
+    <text x="128" y="116" text-anchor="middle" class="sans sub">BM25 + semantic recall</text>
+    <text x="128" y="152" text-anchor="middle" class="sans metric">39/40 answerable</text>
+    <text x="128" y="182" text-anchor="middle" class="sans metric">0/2 refusals</text>
+  </g>
+
+  <g transform="translate(1168 252)">
+    <polygon points="152,0 304,80 152,160 0,80" fill="#f5f5f5"/>
+    <polygon points="152,0 304,80 152,160 0,80" fill="#ffffff" stroke="#2d3142" stroke-width="2"/>
+    <text x="152" y="72" text-anchor="middle" class="sans name">Direct</text>
+    <text x="152" y="104" text-anchor="middle" class="sans name">support?</text>
+    <text x="152" y="132" text-anchor="middle" class="sans sub">reject false hits</text>
+  </g>
+
+  <g transform="translate(1192 552)">
+    <rect x="0" y="0" width="256" height="212" rx="20" fill="#f5f5f5"/>
+    <rect x="0" y="0" width="256" height="212" rx="20" fill="#fdf0ea" stroke="#eb6c36" stroke-width="3"/>
+    <rect x="18" y="18" width="58" height="24" rx="2" fill="transparent" stroke="#eb6c36" stroke-width="1.2"/>
+    <text x="47" y="34" text-anchor="middle" class="mono tag" fill="#eb6c36">PASS</text>
+    <text x="128" y="84" text-anchor="middle" class="sans name">Grounded Result</text>
+    <text x="128" y="122" text-anchor="middle" class="sans metric-accent">39/40 answerable</text>
+    <text x="128" y="160" text-anchor="middle" class="sans metric-accent">2/2 refusals</text>
+    <text x="128" y="190" text-anchor="middle" class="sans sub">source-grounded policy</text>
+  </g>
+
+  <g transform="translate(72 552)">
+    <rect x="0" y="0" width="760" height="212" rx="6" fill="#f5f5f5"/>
+    <rect x="0" y="0" width="760" height="212" rx="6" fill="#ffffff" stroke="#9aa3b2" stroke-width="2"/>
+    <rect x="18" y="18" width="48" height="24" rx="2" fill="transparent" stroke="#9aa3b2" stroke-width="1.2"/>
+    <text x="42" y="34" text-anchor="middle" class="mono tag">SET</text>
+    <text x="92" y="36" class="sans name">42-Question Diagnostic</text>
+    <line x1="32" y1="64" x2="728" y2="64" stroke="rgba(45,49,66,0.14)" stroke-width="1"/>
+    <text x="44" y="108" class="mono tag">Q1-Q10</text>
+    <text x="228" y="108" class="sans metric">10/10</text>
+    <text x="44" y="150" class="mono tag">Q13-Q32</text>
+    <text x="228" y="150" class="sans metric">19/20</text>
+    <text x="404" y="108" class="mono tag">Q33-Q42</text>
+    <text x="604" y="108" class="sans metric">10/10</text>
+    <text x="404" y="150" class="mono tag">Q11-Q12</text>
+    <text x="604" y="150" class="sans metric">2/2 refused</text>
+    <text x="44" y="190" class="sans sub">No manual answer-key chunks; scoring checks returned evidence windows.</text>
+  </g>
+
+  <line x1="72" y1="840" x2="1528" y2="840" stroke="rgba(45,49,66,0.18)" stroke-width="1"/>
+  <text x="72" y="884" class="mono tag">TAKEAWAY</text>
+  <text x="204" y="884" class="sans legend">Retrieval repair raises answerable accuracy from 22/40 to 39/40; Q27 remains a semantic recall miss without answer-key synonyms.</text>
+  <text x="72" y="928" class="mono tag">LEGEND</text>
+  <rect x="176" y="910" width="28" height="18" rx="2" fill="#ffffff" stroke="#2d3142" stroke-width="1.2"/>
+  <text x="216" y="928" class="sans legend">retrieval step</text>
+  <rect x="368" y="910" width="28" height="18" rx="6" fill="#fdf0ea" stroke="#eb6c36" stroke-width="1.8"/>
+  <text x="408" y="928" class="sans legend">final focal result</text>
+  <polygon points="616,910 644,919 616,928" fill="#4f5d75"/>
+  <text x="660" y="928" class="sans legend">candidate flow</text>
+</svg>

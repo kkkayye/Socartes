@@ -60,7 +60,7 @@ STOPWORDS = {
 }
 
 MIN_RETRIEVAL_SCORE = 2
-DEFAULT_TOP_K = 5
+DEFAULT_TOP_K = 7
 DEFAULT_ADJACENT_HOPS = 1
 DEFAULT_SCORING = "hybrid"
 DEFAULT_VECTOR_DIMENSIONS = 384
@@ -75,16 +75,6 @@ _NAME_OF_TARGET_RE = re.compile(
     r"\bname\s+of\s+(?:the\s+|a\s+|an\s+)?([^?.!,;]+)", re.IGNORECASE
 )
 _CHAPTER_HEADING_RE = re.compile(r"\bCHAPTER\s+[IVXLCDM]+\b", re.IGNORECASE)
-_MONEY_RE = re.compile(
-    r"\b(?:hundred|thousand|bucks|dollars|cents|centuries)\b|\$\d|\b\d+\b",
-    re.IGNORECASE,
-)
-_WHO_DEFINITION_RE = re.compile(
-    r"\b(?:he|she|it|they)\s*(?:'s|is|was)\b|\bis\s+a\b|\bwas\s+a\b|"
-    r"\bcalled\b|\bd\.s\.\b|distinguished scientist",
-    re.IGNORECASE,
-)
-_LATIN_BINOMIAL_RE = re.compile(r"\b[a-z]+us\s+[a-z]+(?:a|ex|is)\b", re.IGNORECASE)
 _SEMANTIC_GROUPS = (
     frozenset(
         {
@@ -100,7 +90,7 @@ _SEMANTIC_GROUPS = (
             "pulled",
         }
     ),
-    frozenset({"battle", "brawl", "fight", "quarrel", "row", "scrimmage", "scuffle"}),
+    frozenset({"battle", "brawl", "fight", "quarrel", "row", "scuffle"}),
     frozenset({"last", "night", "previous", "yesterday"}),
     frozenset({"call", "called", "name", "named", "said", "say", "term", "word"}),
     frozenset(
@@ -117,13 +107,9 @@ _SEMANTIC_GROUPS = (
         {
             "beetle",
             "bug",
-            "carnifex",
-            "gloriosa",
             "insect",
             "mesothorax",
             "metathorax",
-            "phanaeus",
-            "phusiotus",
             "prothorax",
         }
     ),
@@ -893,8 +879,6 @@ class StoryRagIndex:
         score += 0.6 * self._bm25_score(query_terms, position)
         score += self._phrase_bonus(question, query_terms, chunk_terms)
         score += self._proximity_bonus(query_terms, chunk_terms)
-        score += self._amount_answer_bonus(question, candidate.chunk.text)
-        score += self._who_definition_bonus(question, candidate.chunk.text)
         if self._looks_like_table_of_contents(position, candidate.chunk.text):
             score -= 20.0
         return score
@@ -902,51 +886,21 @@ class StoryRagIndex:
     def _semantic_alignment_bonus(self, question: str, text: str) -> float:
         question_terms = self.query_terms(question)
         text_terms = set(tokenize_terms(text))
-        text_lower = text.lower().replace("_", " ")
         bonus = 0.0
 
         if {"dragged", "away"} & question_terms and {"lugged", "off"} <= text_terms:
-            bonus += 12.0
-        if "fight" in question_terms and "scrimmage" in text_terms:
-            bonus += 12.0
-        if (
-            {"correcting", "corrected", "correct"} & question_terms
-            and {"frances", "billings"} <= text_terms
-            and {"call", "mean", "remember", "corrected"} & text_terms
-        ):
-            bonus += 12.0
-        if (
-            {"identify", "identified", "identifies"} & question_terms
-            and {"bug", "professor"} & text_terms
-            and _LATIN_BINOMIAL_RE.search(text_lower)
-        ):
             bonus += 12.0
         return bonus
 
     def _direct_answer_alignment_bonus(self, question: str, text: str) -> float:
         question_terms = self.query_terms(question)
         text_terms = set(tokenize_terms(text))
-        text_lower = text.lower().replace("_", " ")
         bonus = 0.0
 
         if (
             {"dragged", "away"} & question_terms
             and {"lugged", "off"} <= text_terms
             and {"draw", "drawn", "drew"} & text_terms
-        ):
-            bonus += 60.0
-        if {"word", "fight"} <= question_terms and "scrimmage" in text_terms:
-            bonus += 60.0
-        if (
-            {"correcting", "corrected", "correct"} & question_terms
-            and {"miss", "billings", "frances"} <= text_terms
-            and {"call", "corrected"} & text_terms
-        ):
-            bonus += 60.0
-        if (
-            {"identify", "identified", "identifies"} & question_terms
-            and {"professor", "bug"} & text_terms
-            and _LATIN_BINOMIAL_RE.search(text_lower)
         ):
             bonus += 60.0
         if question.lower().startswith("who ") and len(question_terms) >= 2:
@@ -990,23 +944,6 @@ class StoryRagIndex:
             later - earlier for earlier, later in zip(positions, positions[1:])
         )
         return 5.0 / (1.0 + closest_pair / 6.0)
-
-    def _amount_answer_bonus(self, question: str, text: str) -> float:
-        if not re.search(
-            r"\b(amount|reward|how much|money|paid|pay)\b", question.lower()
-        ):
-            return 0.0
-        bonus = 0.0
-        if _MONEY_RE.search(text):
-            bonus += 12.0
-        if "reward" in text.lower():
-            bonus += 8.0
-        return bonus
-
-    def _who_definition_bonus(self, question: str, text: str) -> float:
-        if not question.lower().startswith("who "):
-            return 0.0
-        return 6.0 if _WHO_DEFINITION_RE.search(text) else 0.0
 
     def _looks_like_table_of_contents(self, position: int, text: str) -> bool:
         return position < 3 or len(_CHAPTER_HEADING_RE.findall(text)) >= 2

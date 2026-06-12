@@ -29,11 +29,11 @@
     <rect x="42" y="336" width="876" height="76" rx="6" fill="#ecfdf5" stroke="#22c55e" stroke-width="2"/>
     <text x="62" y="367" font-size="17" font-weight="700" fill="#064e3b">Socartes full-novel automatic index</text>
     <text x="62" y="391" font-size="13" fill="#166534">1047 deterministic automatic chunks</text>
-    <text x="508" y="380" font-size="30" font-weight="700" fill="#15803d">40/40</text>
+    <text x="508" y="380" font-size="30" font-weight="700" fill="#15803d">39/40</text>
     <text x="662" y="380" font-size="30" font-weight="700" fill="#15803d">2/2</text>
     <text x="786" y="372" font-size="13" font-weight="700" fill="#064e3b">main test</text>
   </g>
 
   <rect x="42" y="434" width="876" height="28" rx="6" fill="#ecfdf5" stroke="#86efac"/>
-  <text x="62" y="453" fill="#166534" font-family="Arial, sans-serif" font-size="12">BM25 + vector RRF plus reranking reaches 40/40 answerable questions while the support gate keeps refusals at 2/2.</text>
+  <text x="62" y="453" fill="#166534" font-family="Arial, sans-serif" font-size="12">After removing answer-key synonyms, RRF reranking reaches 39/40 while the support gate keeps refusals at 2/2.</text>
 </svg>

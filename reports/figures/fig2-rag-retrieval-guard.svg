@@ -1,0 +1,116 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="2600" height="1166" viewBox="0 0 2600 1166">
+  <defs>
+    <filter id="shadow" x="-8%" y="-12%" width="116%" height="128%">
+      <feDropShadow dx="0" dy="8" stdDeviation="8" flood-color="#102033" flood-opacity="0.10"/>
+    </filter>
+    <style>
+      .title { font-family: Arial, Helvetica, sans-serif; fill: #111827; font-weight: 700; }
+      .sub { font-family: Arial, Helvetica, sans-serif; fill: #59677a; }
+      .lane { font-family: Arial, Helvetica, sans-serif; fill: #374151; font-weight: 700; }
+      .node-title { font-family: Arial, Helvetica, sans-serif; fill: #111827; font-size: 27px; font-weight: 700; }
+      .node-body { font-family: Arial, Helvetica, sans-serif; fill: #405064; font-size: 21px; }
+      .tag { font-family: Arial, Helvetica, sans-serif; font-size: 20px; font-weight: 700; letter-spacing: 1.6px; }
+      .small { font-family: Arial, Helvetica, sans-serif; fill: #4b5563; font-size: 22px; }
+      .tiny { font-family: Arial, Helvetica, sans-serif; fill: #64748b; font-size: 19px; }
+    </style>
+  </defs>
+
+  <rect width="2600" height="1166" fill="#fbfcfe"/>
+
+  <text x="1300" y="78" text-anchor="middle" class="title" font-size="50">
+    Story RAG Retrieval and Refusal Guard
+  </text>
+  <text x="1300" y="122" text-anchor="middle" class="sub" font-size="27">
+    Socartes answers only when the active story index returns traceable evidence
+  </text>
+
+  <rect x="120" y="175" width="2360" height="675" rx="24" fill="#ffffff" stroke="#d9e2ef" stroke-width="2"/>
+  <rect x="160" y="220" width="2280" height="72" rx="16" fill="#eff6ff" stroke="#c6dbf7" stroke-width="2"/>
+  <text x="200" y="266" class="lane" font-size="28">Retrieval path</text>
+  <text x="1690" y="266" text-anchor="middle" class="tiny" font-size="22">
+    Title words are ignored for scoring; answers require evidence terms from the chunk body
+  </text>
+
+  <!-- Pipeline nodes -->
+  <g filter="url(#shadow)">
+    <rect x="170" y="390" width="310" height="190" rx="14" fill="#f4f7fb" stroke="#9aa7b8" stroke-width="3"/>
+    <rect x="170" y="390" width="310" height="10" rx="5" fill="#64748b"/>
+    <text x="325" y="458" text-anchor="middle" class="node-title">User Question</text>
+    <text x="325" y="508" text-anchor="middle" class="node-body">plot-specific query</text>
+    <text x="325" y="539" text-anchor="middle" class="node-body">from the chat session</text>
+
+    <rect x="575" y="390" width="310" height="190" rx="14" fill="#eef5ff" stroke="#93b8e8" stroke-width="3"/>
+    <rect x="575" y="390" width="310" height="10" rx="5" fill="#2563eb"/>
+    <text x="730" y="458" text-anchor="middle" class="node-title">Query Cleaning</text>
+    <text x="730" y="508" text-anchor="middle" class="node-body">lowercase tokens</text>
+    <text x="730" y="539" text-anchor="middle" class="node-body">remove stopwords</text>
+
+    <rect x="980" y="390" width="310" height="190" rx="14" fill="#eef5ff" stroke="#93b8e8" stroke-width="3"/>
+    <rect x="980" y="390" width="310" height="10" rx="5" fill="#2563eb"/>
+    <text x="1135" y="458" text-anchor="middle" class="node-title">Story Chunk Index</text>
+    <text x="1135" y="508" text-anchor="middle" class="node-body">The Haunted Pajamas</text>
+    <text x="1135" y="539" text-anchor="middle" class="node-body">source_id + source_url</text>
+
+    <rect x="1385" y="390" width="310" height="190" rx="14" fill="#fff6df" stroke="#e0bd64" stroke-width="3"/>
+    <rect x="1385" y="390" width="310" height="10" rx="5" fill="#c26700"/>
+    <text x="1540" y="458" text-anchor="middle" class="node-title">Evidence Scoring</text>
+    <text x="1540" y="508" text-anchor="middle" class="node-body">match body terms</text>
+    <text x="1540" y="539" text-anchor="middle" class="node-body">rank candidate chunks</text>
+
+    <rect x="1790" y="390" width="345" height="190" rx="14" fill="#f3ecff" stroke="#aa8be8" stroke-width="3"/>
+    <rect x="1790" y="390" width="345" height="10" rx="5" fill="#6d3bd2"/>
+    <text x="1963" y="458" text-anchor="middle" class="node-title">Guard Decision</text>
+    <text x="1963" y="508" text-anchor="middle" class="node-body">minimum evidence terms</text>
+    <text x="1963" y="539" text-anchor="middle" class="node-body">and confidence threshold</text>
+  </g>
+
+  <!-- Main arrows -->
+  <line x1="482" y1="485" x2="550" y2="485" stroke="#173b63" stroke-width="8" stroke-linecap="round"/>
+  <polygon points="570,485 547,471 547,499" fill="#173b63"/>
+  <line x1="887" y1="485" x2="955" y2="485" stroke="#173b63" stroke-width="8" stroke-linecap="round"/>
+  <polygon points="975,485 952,471 952,499" fill="#173b63"/>
+  <line x1="1292" y1="485" x2="1360" y2="485" stroke="#173b63" stroke-width="8" stroke-linecap="round"/>
+  <polygon points="1380,485 1357,471 1357,499" fill="#173b63"/>
+  <line x1="1697" y1="485" x2="1765" y2="485" stroke="#173b63" stroke-width="8" stroke-linecap="round"/>
+  <polygon points="1785,485 1762,471 1762,499" fill="#173b63"/>
+
+  <!-- Guard annotations -->
+  <rect x="635" y="615" width="365" height="64" rx="14" fill="#ffffff" stroke="#bfdbfe" stroke-width="2"/>
+  <text x="817" y="655" text-anchor="middle" class="tag" fill="#2563eb">TITLE-TERM FILTER</text>
+  <line x1="730" y1="580" x2="730" y2="612" stroke="#2563eb" stroke-width="5" stroke-linecap="round"/>
+  <polygon points="730,622 719,604 741,604" fill="#2563eb"/>
+
+  <rect x="1364" y="615" width="355" height="64" rx="14" fill="#ffffff" stroke="#fed7aa" stroke-width="2"/>
+  <text x="1542" y="655" text-anchor="middle" class="tag" fill="#c26700">BODY-EVIDENCE SCORE</text>
+  <line x1="1540" y1="580" x2="1540" y2="612" stroke="#c26700" stroke-width="5" stroke-linecap="round"/>
+  <polygon points="1540,622 1529,604 1551,604" fill="#c26700"/>
+
+  <!-- Output split -->
+  <line x1="1963" y1="580" x2="1963" y2="690" stroke="#6d3bd2" stroke-width="7" stroke-linecap="round"/>
+  <line x1="1963" y1="690" x2="1650" y2="690" stroke="#16a34a" stroke-width="7" stroke-linecap="round"/>
+  <line x1="1963" y1="690" x2="2265" y2="690" stroke="#dc2626" stroke-width="7" stroke-linecap="round"/>
+  <polygon points="1634,690 1660,674 1660,706" fill="#16a34a"/>
+  <polygon points="2281,690 2255,674 2255,706" fill="#dc2626"/>
+
+  <g filter="url(#shadow)">
+    <rect x="1045" y="735" width="600" height="175" rx="16" fill="#edf8ef" stroke="#86c18b" stroke-width="3"/>
+    <rect x="1045" y="735" width="600" height="12" rx="6" fill="#16a34a"/>
+    <text x="1345" y="790" text-anchor="middle" class="node-title">Grounded Answer</text>
+    <text x="1345" y="838" text-anchor="middle" class="node-body">emit answer with source_id, source_url, and matched evidence</text>
+    <text x="1345" y="872" text-anchor="middle" class="node-body">used for Q1-Q10 in the 12-question diagnostic test</text>
+
+    <rect x="1710" y="735" width="600" height="175" rx="16" fill="#fff0f0" stroke="#ef8b8b" stroke-width="3"/>
+    <rect x="1710" y="735" width="600" height="12" rx="6" fill="#dc2626"/>
+    <text x="2010" y="790" text-anchor="middle" class="node-title">Refusal Response</text>
+    <text x="2010" y="838" text-anchor="middle" class="node-body">return grounded=false when no chunk passes the guard</text>
+    <text x="2010" y="872" text-anchor="middle" class="node-body">used for out-of-database control questions Q11-Q12</text>
+  </g>
+
+  <rect x="330" y="980" width="1940" height="84" rx="18" fill="#f8fafc" stroke="#d9e2ef" stroke-width="2"/>
+  <text x="1300" y="1017" text-anchor="middle" class="small" font-weight="700">
+    Retrieval contract
+  </text>
+  <text x="1300" y="1054" text-anchor="middle" class="tiny">
+    A response is accepted only when it is tied to retrieved body evidence; otherwise Socartes refuses rather than guessing.
+  </text>
+</svg>

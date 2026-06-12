@@ -1,0 +1,68 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="2600" height="1600" viewBox="0 0 2600 1600">
+  <defs>
+    <marker id="arrow" markerWidth="24" markerHeight="16" refX="22" refY="8" orient="auto">
+      <path d="M0,0 L24,8 L0,16 Z" fill="#475569"/>
+    </marker>
+    <marker id="arrow-accent" markerWidth="24" markerHeight="16" refX="22" refY="8" orient="auto">
+      <path d="M0,0 L24,8 L0,16 Z" fill="#eb6c36"/>
+    </marker>
+    <style>
+      .title { font-family: Arial, Helvetica, sans-serif; fill: #111827; font-weight: 700; }
+      .sub { font-family: Arial, Helvetica, sans-serif; fill: #526174; }
+      .tag { font-family: "DejaVu Sans Mono", monospace; fill: #64748b; font-size: 31px; letter-spacing: 5px; font-weight: 700; }
+      .node-title { font-family: Arial, Helvetica, sans-serif; fill: #111827; font-size: 62px; font-weight: 700; }
+      .node-body { font-family: Arial, Helvetica, sans-serif; fill: #475569; font-size: 42px; }
+      .metric { font-family: Arial, Helvetica, sans-serif; fill: #15803d; font-size: 58px; font-weight: 700; }
+      .note { font-family: Arial, Helvetica, sans-serif; fill: #334155; font-size: 34px; }
+    </style>
+  </defs>
+  <rect width="2600" height="1600" fill="#fbfcfe"/>
+  <text x="1300" y="115" text-anchor="middle" class="title" font-size="78">StoryRagIndex RAG Pipeline</text>
+  <text x="1300" y="178" text-anchor="middle" class="sub" font-size="38">automatic full-novel index -> hybrid recall -> rerank -> support gate</text>
+
+  <rect x="105" y="300" width="500" height="260" rx="24" fill="#eef2f7" stroke="#94a3b8" stroke-width="4"/>
+  <text x="145" y="360" class="tag">INDEX</text>
+  <text x="355" y="442" text-anchor="middle" class="node-title">Full Novel</text>
+  <text x="355" y="498" text-anchor="middle" class="node-body">1,047 automatic chunks</text>
+
+  <rect x="745" y="300" width="500" height="260" rx="24" fill="#ffffff" stroke="#cbd5e1" stroke-width="4"/>
+  <text x="785" y="360" class="tag">QUERY</text>
+  <text x="995" y="442" text-anchor="middle" class="node-title">Question</text>
+  <text x="995" y="498" text-anchor="middle" class="node-body">title terms removed</text>
+
+  <rect x="1385" y="300" width="500" height="260" rx="24" fill="#eff6ff" stroke="#2563eb" stroke-width="5"/>
+  <text x="1425" y="360" class="tag" fill="#1d4ed8">RECALL</text>
+  <text x="1635" y="442" text-anchor="middle" class="node-title">Hybrid RRF</text>
+  <text x="1635" y="498" text-anchor="middle" class="node-body">BM25 + vector recall</text>
+
+  <rect x="2025" y="300" width="500" height="260" rx="24" fill="#fff7ed" stroke="#eb6c36" stroke-width="5"/>
+  <text x="2065" y="360" class="tag" fill="#c2410c">RERANK</text>
+  <text x="2275" y="442" text-anchor="middle" class="node-title">Evidence</text>
+  <text x="2275" y="498" text-anchor="middle" class="node-body">top_k=7 + neighbors</text>
+
+  <path d="M605 430 H735" stroke="#475569" stroke-width="8" marker-end="url(#arrow)"/>
+  <path d="M1245 430 H1375" stroke="#475569" stroke-width="8" marker-end="url(#arrow)"/>
+  <path d="M1885 430 H2015" stroke="#475569" stroke-width="8" marker-end="url(#arrow)"/>
+
+  <path d="M1810 720 L2100 900 L1810 1080 L1520 900 Z" fill="#ffffff" stroke="#0f172a" stroke-width="5"/>
+  <text x="1810" y="875" text-anchor="middle" class="node-title">Direct</text>
+  <text x="1810" y="930" text-anchor="middle" class="node-title">Support?</text>
+  <text x="1810" y="980" text-anchor="middle" class="node-body">reject weak false hits</text>
+  <path d="M2275 560 C2275 660 2050 735 1935 815" stroke="#eb6c36" stroke-width="8" fill="none" marker-end="url(#arrow-accent)"/>
+
+  <rect x="320" y="1140" width="700" height="255" rx="24" fill="#ecfdf5" stroke="#22c55e" stroke-width="5"/>
+  <text x="370" y="1210" class="tag" fill="#15803d">SUPPORTED</text>
+  <text x="670" y="1290" text-anchor="middle" class="node-title">Grounded Answer</text>
+  <text x="670" y="1350" text-anchor="middle" class="metric">39/40 answerable</text>
+
+  <rect x="1580" y="1140" width="700" height="255" rx="24" fill="#fff1f2" stroke="#fb7185" stroke-width="5"/>
+  <text x="1630" y="1210" class="tag" fill="#be123c">UNSUPPORTED</text>
+  <text x="1930" y="1290" text-anchor="middle" class="node-title">Refusal</text>
+  <text x="1930" y="1350" text-anchor="middle" class="metric">2/2 controls refused</text>
+
+  <path d="M1660 1055 C1385 1135 1120 1195 1030 1268" stroke="#22c55e" stroke-width="8" fill="none" marker-end="url(#arrow)"/>
+  <path d="M1900 1080 C1915 1110 1925 1125 1930 1138" stroke="#fb7185" stroke-width="8" fill="none" marker-end="url(#arrow)"/>
+
+  <rect x="250" y="1450" width="2100" height="82" rx="16" fill="#f8fafc" stroke="#cbd5e1" stroke-width="3"/>
+  <text x="1300" y="1504" text-anchor="middle" class="note">Scope: this experiment validates StoryRagIndex retrieval, evidence aggregation, citation, and refusal behavior.</text>
+</svg>

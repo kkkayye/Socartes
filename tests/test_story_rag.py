@@ -1,5 +1,6 @@
 import sys
 import os
+import re
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
@@ -15,6 +16,7 @@ from socartes_backend.story_rag import (
     StoryChunk,
     StoryRagIndex,
 )
+import socartes_backend.story_rag as story_rag
 from experiments.full_novel_eval import (
     ANSWERABLE_QUESTIONS,
     CONTROL_QUESTIONS,
@@ -99,7 +101,7 @@ def test_story_rag_uses_vector_backend_for_dense_recall():
     assert dense_top.chunk.source_id == "semantic-answer"
 
 
-def test_openai_embedding_model_uses_text_embedding_3_large(monkeypatch):
+def test_openai_embedding_model_uses_qwen3_embedding(monkeypatch):
     captured_request = {}
 
     class FakeResponse:
@@ -132,6 +134,24 @@ def test_openai_embedding_model_uses_text_embedding_3_large(monkeypatch):
     assert '"model": "qwen3-embedding-0.6b"' in captured_request["body"]
     assert captured_request["timeout"] == 60.0
     assert vectors == [[0.6, 0.8], [0.0, 1.0]]
+
+
+def test_retrieval_heuristics_do_not_hard_code_diagnostic_answers():
+    source = Path(story_rag.__file__).read_text(encoding="utf-8").lower()
+    heuristic_source = source.split("def build_haunted_pajamas_index", 1)[0]
+
+    forbidden_answer_terms = {
+        "distinguished scientist",
+        "scrimmage",
+        "phusiotus",
+        "phanaeus",
+        "carnifex",
+        "miss billings",
+    }
+
+    for term in forbidden_answer_terms:
+        assert term not in heuristic_source
+    assert not (forbidden_answer_terms & set(re.findall(r"[a-z]+(?: [a-z]+)?", heuristic_source)))
 
 
 def test_story_rag_answers_obscure_plot_questions_from_database_chunks():
@@ -282,10 +302,10 @@ def test_story_rag_full_novel_index_recovers_extended_failure_questions():
 def test_story_rag_hybrid_pipeline_recovers_second_extension_failure_questions():
     body = cleaned_gutenberg_body(DATA_PATH.read_text(encoding="utf-8"))
     index = build_full_novel_index(body, target_words=100)
-    formerly_failed_qids = {"Q23", "Q24", "Q27", "Q29"}
+    recovered_qids = {"Q23", "Q24", "Q29"}
 
     for item in EXTENDED_ANSWERABLE_QUESTIONS:
-        if item.qid not in formerly_failed_qids:
+        if item.qid not in recovered_qids:
             continue
 
         answer = index.ask(item.question)
@@ -293,6 +313,17 @@ def test_story_rag_hybrid_pipeline_recovers_second_extension_failure_questions()
         assert answer.grounded is True, item.question
         assert item.expected_phrase in answer.answer.lower(), item.question
         assert answer.source_ids, item.question
+
+
+def test_story_rag_without_answer_key_synonyms_exposes_scrimmage_recall_gap():
+    body = cleaned_gutenberg_body(DATA_PATH.read_text(encoding="utf-8"))
+    index = build_full_novel_index(body, target_words=100)
+    item = next(question for question in EXTENDED_ANSWERABLE_QUESTIONS if question.qid == "Q27")
+
+    answer = index.ask(item.question)
+
+    assert answer.grounded is True
+    assert item.expected_phrase not in answer.answer.lower()
 
 
 def test_story_rag_hybrid_pipeline_recovers_third_extension_questions():
